@@ -9,6 +9,7 @@ namespace UnityREST
         [SerializeField] protected APIConfig apiConfig;
 
         [SerializeField] protected APIPaths apiPaths;
+
         private static event Func<IEnumerator, Coroutine> CoroutineRunner;
 
         protected static WebTransport transport { get; private set; }
