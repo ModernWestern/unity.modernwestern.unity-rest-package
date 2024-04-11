@@ -12,12 +12,14 @@ namespace UnityREST
     public class WebTransport : IWebTransport
     {
         private readonly APIConfig _apiConfig;
-        
+
         private readonly Dictionary<string, string> _headerValues;
-        
+
         public WebTransport(APIConfig apiConfig)
         {
             _apiConfig = apiConfig;
+
+            _headerValues = new Dictionary<string, string>();
         }
 
         public WebTransport(APIConfig apiConfig, Dictionary<string, string> headers)
@@ -29,22 +31,22 @@ namespace UnityREST
 
         #region GET
 
-        public IEnumerator GETRequest<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
+        public IEnumerator GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
         {
-            yield return GETRequest(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            yield return GET(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator GETRequest(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback)
+        public IEnumerator GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback)
         {
-            yield return GETRequest(URLBuilder.Parameters(uri, parameters), resultCallback);
+            yield return GET(URLBuilder.Parameters(uri, parameters), resultCallback);
         }
 
-        public IEnumerator GETRequest<T>(string uri, Action<WebResult<T>> resultCallback)
+        public IEnumerator GET<T>(string uri, Action<WebResult<T>> resultCallback)
         {
-            yield return GETRequest(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            yield return GET(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator GETRequest(string uri, Action<WebResult> resultCallback)
+        public IEnumerator GET(string uri, Action<WebResult> resultCallback)
         {
             var retryAttempts = 0;
 
@@ -97,12 +99,12 @@ namespace UnityREST
 
         #region POST
 
-        public IEnumerator POSTRequest<T>(string uri, Action<WebResult<T>> resultCallback)
+        public IEnumerator POST<T>(string uri, Action<WebResult<T>> resultCallback)
         {
-            yield return POSTRequest(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            yield return POST(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator POSTRequest(string uri, Action<WebResult> resultCallback)
+        public IEnumerator POST(string uri, Action<WebResult> resultCallback)
         {
             var retryAttempts = 0;
 
@@ -158,7 +160,12 @@ namespace UnityREST
             webRequest.Dispose();
         }
 
-        public IEnumerator POSTRequest(string uri, string body, Action<WebResult> resultCallback)
+        public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback)
+        {
+            yield return POST(uri, body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST(string uri, string body, Action<WebResult> resultCallback)
         {
 #if UNITY_EDITOR
 
@@ -215,21 +222,16 @@ namespace UnityREST
             webRequest.Dispose();
         }
 
-        public IEnumerator POSTRequest<T>(string uri, string body, Action<WebResult<T>> resultCallback)
-        {
-            yield return POSTRequest(uri, body, result => resultCallback?.Invoke(new WebResult<T>(result)));
-        }
-
         #endregion
 
         #region PUT
 
-        public IEnumerator PUTRequest<T>(string uri, string data, Action<WebResult<T>> resultCallback)
+        public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
-            yield return PUTRequest(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            yield return PUT(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator PUTRequest(string uri, string data, Action<WebResult> resultCallback)
+        public IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback)
         {
 #if UNITY_EDITOR
 

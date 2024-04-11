@@ -6,19 +6,28 @@ namespace UnityREST
 {
     public class GameAPIManager : APIManager
     {
-        public void PostObject(string key, string value, Action<WebResult<Object>> callback)
+        // Get Example
+        public static void GetObject(Action<WebResult<Object>> callback)
         {
-            StartCoroutine(instance.POSTRequest(JDataBuilder.JObject((key, value)), callback));
+            StartRequest("endpointName", path => transport.GET(path, callback));
         }
 
-        public void PostArrayObject(string key, List<Object> array, Action<WebResult<Object>> callback)
+        // Post Example 1 [String]
+        public static void PostObject(string key, string value, Action<WebResult<Object>> callback)
         {
-            StartCoroutine(instance.POSTRequest(JDataBuilder.JArrayObject(key, array), callback));
+            StartRequest("endpointName", path => transport.POST(path, JBuilder.Object((key, value)), callback));
         }
 
+        // Post Example 2 [List]
+        public void PostArrayObject(string key, List<Object> list, Action<WebResult<Object>> callback)
+        {
+            StartRequest("endpointName", path => transport.POST(path, JBuilder.ArrayObject(key, list), callback));
+        }
+
+        // Post Example 3 [Array]
         public void PostArrayObject(string key, Object[] array, Action<WebResult<Object>> callback)
         {
-            StartCoroutine(instance.POSTRequest(JDataBuilder.JArrayObject(key, array), callback));
+            StartRequest("endpointName", path => transport.POST(path, JBuilder.ArrayObject(key, array), callback));
         }
     }
 }

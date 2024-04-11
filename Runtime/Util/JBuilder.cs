@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace UnityREST.Util
 {
-    public static class JDataBuilder
+    public static class JBuilder
     {
         /// <returns>
         /// <code>
@@ -17,7 +17,7 @@ namespace UnityREST.Util
         /// }
         /// </code>
         /// </returns>
-        public static string JObject(params (string key, string value)[] pairs)
+        public static string Object(params (string key, string value)[] pairs)
         {
             var payload = new JObject();
 
@@ -43,11 +43,11 @@ namespace UnityREST.Util
         /// }
         /// </code>
         /// </returns>
-        public static string JArrayObject<T>(string name, IEnumerable<T> collection)
+        public static string ArrayObject<T>(string name, IEnumerable<T> collection)
         {
             var payload = new JObject
             {
-                { name, JArray(collection) }
+                { name, Array(collection) }
             };
 
             return JsonConvert.SerializeObject(payload);
@@ -63,7 +63,7 @@ namespace UnityREST.Util
         /// ]
         /// </code>
         /// </returns>
-        public static string JArray<T>(IEnumerable<T> collection)
+        public static string Array<T>(IEnumerable<T> collection)
         {
             return JToken.FromObject(collection.ToArray()).ToString();
         }

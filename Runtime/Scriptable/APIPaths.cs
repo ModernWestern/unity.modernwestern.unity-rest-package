@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UnityREST
 {
-    [CreateAssetMenu(fileName = "new APIPaths", menuName = "UnityREST/APIPaths", order = 1)]
+    [CreateAssetMenu(fileName = "New APIPaths", menuName = "UnityREST/APIPaths", order = 1)]
     public class APIPaths : ScriptableObject
     {
         private const string Https = "https://";
@@ -18,6 +18,13 @@ namespace UnityREST
             if (string.IsNullOrEmpty(domain))
             {
                 domain = Https;
+            }
+            else
+            {
+                if (!domain.StartsWith(Https))
+                {
+                    domain = Https + domain;
+                }
             }
         }
 #endif
