@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace UnityREST
 {
+    // To ensure that your code is executed first (-200), make sure that the GameAPIManger script is loaded before any other script.
+    // This will prevent any 'Awake' request failures.
+    [DefaultExecutionOrder(-200)]
     public class GameAPIManager : APIManager
     {
         // Get Example

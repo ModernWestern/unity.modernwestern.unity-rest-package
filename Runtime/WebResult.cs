@@ -9,58 +9,58 @@ namespace UnityREST
 
     public class WebResult
     {
-        public string URL { get; private set; }
+        public string url { get; private set; }
 
-        public string ResponseText { get; private set; }
+        public string responseText { get; private set; }
 
-        public Result ResponseResult { get; private set; }
+        public Result responseResult { get; private set; }
 
-        public long ResponseCode { get; private set; }
+        public long responseCode { get; private set; }
 
-        public string RequestMethod { get; private set; }
+        public string requestMethod { get; private set; }
 
-        public string RequestPacket { get; private set; }
+        public string requestPacket { get; private set; }
 
-        public byte[] ResponseData { get; private set; }
+        public byte[] responseData { get; private set; }
 
-        public bool HasError() => ResponseResult != Result.Success || ResponseCode >= 400;
+        public bool HasError() => responseResult != Result.Success || responseCode >= 400;
 
         public WebResult(UnityWebRequest webRequest, string packet = "")
         {
-            URL = webRequest.url;
-            ResponseText = webRequest.downloadHandler.text;
-            ResponseResult = webRequest.result;
-            ResponseCode = webRequest.responseCode;
-            RequestMethod = webRequest.method;
-            RequestPacket = packet;
+            url = webRequest.url;
+            responseText = webRequest.downloadHandler.text;
+            responseResult = webRequest.result;
+            responseCode = webRequest.responseCode;
+            requestMethod = webRequest.method;
+            requestPacket = packet;
         }
 
         public WebResult(UnityWebRequest webRequest, byte[] data, string packet = "")
         {
-            URL = webRequest.url;
-            ResponseText = webRequest.downloadHandler.text;
-            ResponseResult = webRequest.result;
-            ResponseCode = webRequest.responseCode;
-            RequestMethod = webRequest.method;
-            RequestPacket = packet;
-            ResponseData = data;
+            url = webRequest.url;
+            responseText = webRequest.downloadHandler.text;
+            responseResult = webRequest.result;
+            responseCode = webRequest.responseCode;
+            requestMethod = webRequest.method;
+            requestPacket = packet;
+            responseData = data;
         }
 
         public override string ToString()
         {
-            return $"<color=yellow>[{URL}]</color>\nresult:{ResponseResult}, responseCode:{ResponseCode}, data: {ResponseText}";
+            return $"<color=yellow>[{url}]</color>\nresult:{responseResult}, responseCode:{responseCode}, data: {responseText}";
         }
     }
 
     public class WebResult<T>
     {
-        public T Data { get; private set; }
+        public T data { get; private set; }
 
-        public WebResult Result { get; private set; }
+        public WebResult result { get; private set; }
 
         public WebResult(WebResult result)
         {
-            Result = result;
+            this.result = result;
 
             if (result.HasError())
             {
@@ -69,13 +69,13 @@ namespace UnityREST
 
             try
             {
-                Data = JsonConvert.DeserializeObject<T>(result.ResponseText);
+                data = JsonConvert.DeserializeObject<T>(result.responseText);
 
-                Debug.Log($"<b>Data result [{typeof(T)}] - status -> {(Data != null ? "<color=green>ok</color>" : "<color=red>null</color>")}</b>");
+                Debug.Log($"<b>Data result [{typeof(T)}] - status -> {(data != null ? "<color=green>ok</color>" : "<color=red>null</color>")}</b>");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error attempting to deserialize to type [{typeof(T)}] from data {result.ResponseText}\nStacktrace:\n{e.StackTrace}");
+                Debug.LogError($"Error attempting to deserialize to type [{typeof(T)}] from data {result.responseText}\nStacktrace:\n{e.StackTrace}");
 
                 throw;
             }

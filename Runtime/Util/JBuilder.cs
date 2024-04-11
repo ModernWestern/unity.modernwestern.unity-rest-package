@@ -29,7 +29,7 @@ namespace UnityREST.Util
             return JsonConvert.SerializeObject(payload);
         }
 
-        /// <param name="name">Key name</param>
+        /// <param name="key">Key name</param>
         /// <param name="collection">Array of objects of type T</param>
         /// <returns>
         /// <code>
@@ -43,11 +43,11 @@ namespace UnityREST.Util
         /// }
         /// </code>
         /// </returns>
-        public static string ArrayObject<T>(string name, IEnumerable<T> collection)
+        public static string ArrayObject<T>(string key, IEnumerable<T> collection)
         {
             var payload = new JObject
             {
-                { name, Array(collection) }
+                { key, Array(collection) }
             };
 
             return JsonConvert.SerializeObject(payload);
