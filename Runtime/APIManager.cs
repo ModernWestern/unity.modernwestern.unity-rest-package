@@ -30,6 +30,8 @@ namespace UnityREST
             {
                 return CoroutineRunner?.Invoke(path(validPath));
             }
+
+            return default;
         }
 
         #region Handlers
