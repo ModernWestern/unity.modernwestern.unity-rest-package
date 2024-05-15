@@ -6,9 +6,10 @@ namespace UnityREST
 {
     public abstract class APIManager : MonoBehaviour
     {
-        [SerializeField] protected APIConfig apiConfig;
-
         [SerializeField] protected APIPaths apiPaths;
+
+        [Header("Overrides*"), Space, SerializeField]
+        protected APIConfig apiConfig;
 
         private static event Func<IEnumerator, Coroutine> CoroutineRunner;
 
@@ -20,7 +21,7 @@ namespace UnityREST
         {
             CoroutineRunner += CoroutineRunnerHandler;
 
-            transport = new WebTransport(apiConfig);
+            transport = new WebTransport(apiConfig ?? ScriptableObject.CreateInstance<APIConfig>());
 
             _paths = apiPaths;
         }

@@ -1,5 +1,7 @@
 ﻿using System;
+using UnityEngine;
 using UnityREST.Util;
+using Object = System.Object;
 using System.Collections.Generic;
 
 namespace UnityREST
