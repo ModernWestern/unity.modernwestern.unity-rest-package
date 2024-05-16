@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>UnityREST.Runtime</name>
+    </assembly>
+    <members>
+        <member name="T:UnityREST.Util.JBuilder">
+            <summary>
+                A utility class for building JSON objects and arrays.
+            </summary>
+        </member>
+
+        <member name="M:UnityREST.Util.JBuilder.Object(System.ValueTuple{System.String,System.String}[])">
+            <summary>
+                Creates a JSON object from a list of key-value pairs.
+            </summary>
+            <param name="pairs">An array of key-value pairs to include in the JSON object.</param>
+            <returns>
+                A JSON string representing the object.
+                <code>
+                    {
+                    "key0": "value 0",
+                    "key1": "value 1",
+                    "key2": "value 2",
+                    ...
+                    }
+                </code>
+            </returns>
+        </member>
+
+        <member name="M:UnityREST.Util.JBuilder.ArrayObject``1(System.String,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+                Creates a JSON object containing a key and an array of objects.
+            </summary>
+            <param name="key">Key name</param>
+            <param name="collection">Array of objects of type T</param>
+            <returns>
+                A JSON string representing the object with an array.
+                <code>
+                    {
+                    "key": [
+                    { "element": "0" },
+                    { "element": "1" },
+                    ...
+                    ]
+                    }
+                </code>
+            </returns>
+        </member>
+
+        <member name="M:UnityREST.Util.JBuilder.Array``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+                Creates a JSON array from a collection of objects.
+            </summary>
+            <param name="collection">Array of objects of type T</param>
+            <returns>
+                A JSON string representing the array.
+                <code>
+                    [
+                    { "element": "0" },
+                    { "element": "1" },
+                    ...
+                    ]
+                </code>
+            </returns>
+        </member>
+
+    </members>
+</doc>

@@ -3,7 +3,7 @@
     using UnityEngine;
     using UnityEditor;
 
-    [CustomPropertyDrawer(typeof(EndPoint))]
+    [CustomPropertyDrawer(typeof(Resource))]
     public class EndPointDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

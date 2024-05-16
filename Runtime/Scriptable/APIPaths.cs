@@ -1,42 +1,45 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace UnityREST
 {
+    /*
+       scheme    whole domain
+       ┌───┐   ┌─────────────┐
+       https://www.google.com/
+       └───┘   └─────────────┘
+    */
+
     [CreateAssetMenu(fileName = "New APIPaths", menuName = "UnityREST/APIPaths", order = 0)]
     public class APIPaths : ScriptableObject
     {
-        private const string Https = "https://";
-        private const string Http = "http://";
-
         [SerializeField] private Scheme scheme;
         [SerializeField] private string domain;
-        [SerializeField] private EndPoint[] endPoints;
+        [SerializeField] private Resource[] resources;
 
-        public string GetPath(string endPointName)
+        public string GetPath(string resourceName)
         {
-            if (endPoints.FirstOrDefault(endPoint => endPoint.name == endPointName) is { } validEndPoint)
+            if (resources.FirstOrDefault(r => r.name == resourceName) is { } resource)
             {
-                return $"{(scheme == Scheme.Local ? Http : Https)}{domain}/{validEndPoint.path}";
+                return $"{scheme}://{domain}/{resource.path}";
             }
 
-            Debug.Log($"The EndPoint with [{endPointName}] does not exists");
+            Debug.Log($"The EndPoint with [{resourceName}] does not exists");
 
             return null;
         }
     }
 
     [Serializable]
-    public class EndPoint
+    public class Resource
     {
         public string name, path;
     }
 
     public enum Scheme
     {
-        [InspectorName("http\t[Local]")] Local,
-        [InspectorName("https\t[Remote]")] Remote,
+        [InspectorName("http")] http,
+        [InspectorName("https\t[Secure]")] https,
     }
 }
