@@ -7,18 +7,18 @@ namespace UnityREST
     public class APIConfig : ScriptableObject
     {
         [SerializeField] private Settings settings;
-        [SerializeField, TextArea(10, 20)] private string JWTBearer;
+        [Space, SerializeField, TextArea] private string bearerToken;
 
         public int Timeout => settings.timeout;
         public int MaxRetryAttempts => settings.maxRetryAttempts;
         public float RetryDelay => settings.retryDelay;
         public string JsonContentType => settings.jsonContentType;
 
-        public bool TryGetJWTBearer(out string token)
+        public bool TryGetBearerToken(out string token)
         {
-            if (!string.IsNullOrEmpty(JWTBearer))
+            if (!string.IsNullOrEmpty(bearerToken))
             {
-                token = JWTBearer;
+                token = bearerToken;
                 return true;
             }
 

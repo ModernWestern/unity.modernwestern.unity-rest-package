@@ -20,7 +20,7 @@ namespace UnityREST
             _apiConfig = apiConfig;
             _headerValues = new Dictionary<string, string>();
 
-            if (apiConfig.TryGetJWTBearer(out var token))
+            if (apiConfig.TryGetBearerToken(out var token))
             {
                 _headerValues["Authorization"] = $"Bearer {token}";
             }
