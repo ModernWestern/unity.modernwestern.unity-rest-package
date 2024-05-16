@@ -6,16 +6,29 @@ namespace UnityREST
     [CreateAssetMenu(fileName = "New APIConfig", menuName = "UnityREST/APIConfig", order = 1)]
     public class APIConfig : ScriptableObject
     {
-        [SerializeField] private HttpSettings httpSettings;
+        [SerializeField] private Settings settings;
+        [SerializeField, TextArea(10, 20)] private string JWTBearer;
 
-        public int Timeout => httpSettings.timeout;
-        public int MaxRetryAttempts => httpSettings.maxRetryAttempts;
-        public float RetryDelay => httpSettings.retryDelay;
-        public string JsonContentType => httpSettings.jsonContentType;
+        public int Timeout => settings.timeout;
+        public int MaxRetryAttempts => settings.maxRetryAttempts;
+        public float RetryDelay => settings.retryDelay;
+        public string JsonContentType => settings.jsonContentType;
+
+        public bool TryGetJWTBearer(out string token)
+        {
+            if (!string.IsNullOrEmpty(JWTBearer))
+            {
+                token = JWTBearer;
+                return true;
+            }
+
+            token = string.Empty;
+            return false;
+        }
     }
 
     [Serializable]
-    public class HttpSettings
+    public class Settings
     {
         public int timeout = 10;
         public int maxRetryAttempts = 3;

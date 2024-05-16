@@ -18,18 +18,21 @@ namespace UnityREST
         public WebTransport(APIConfig apiConfig)
         {
             _apiConfig = apiConfig;
-
             _headerValues = new Dictionary<string, string>();
+
+            if (apiConfig.TryGetJWTBearer(out var token))
+            {
+                _headerValues["Authorization"] = $"Bearer {token}";
+            }
         }
 
         public WebTransport(APIConfig apiConfig, Dictionary<string, string> headers)
         {
             _apiConfig = apiConfig;
-
             _headerValues = headers;
         }
 
-        #region GET
+        #region Get
 
         public IEnumerator GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
         {
@@ -97,7 +100,7 @@ namespace UnityREST
 
         #endregion
 
-        #region POST
+        #region Post
 
         public IEnumerator POST<T>(string uri, Action<WebResult<T>> resultCallback)
         {
@@ -224,7 +227,7 @@ namespace UnityREST
 
         #endregion
 
-        #region PUT
+        #region Put
 
         public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
