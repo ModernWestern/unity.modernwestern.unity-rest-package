@@ -65,7 +65,7 @@ namespace UnityREST.Util
         /// </returns>
         public static string Array<T>(IEnumerable<T> collection)
         {
-            return JToken.FromObject(collection.ToArray()).ToString();
+            return JToken.FromObject(collection.ToArray()).ToString(Formatting.None);
         }
     }
 }
