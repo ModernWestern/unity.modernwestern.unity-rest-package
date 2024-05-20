@@ -28,7 +28,7 @@ namespace UnityREST.Util
                 payload.Add(pair.key, token);
             }
 
-            return JsonConvert.SerializeObject(payload);
+            return JsonConvert.SerializeObject(payload, Formatting.Indented);
         }
 
         /// <param name="key">Key name</param>
@@ -53,7 +53,7 @@ namespace UnityREST.Util
                 { key, Array(collection) }
             };
 
-            return JsonConvert.SerializeObject(payload);
+            return JsonConvert.SerializeObject(payload, Formatting.Indented);
         }
 
         /// <param name="collection">Array of objects of type T</param>
@@ -75,10 +75,40 @@ namespace UnityREST.Util
         /// <summary>
         /// Returns a JToken from an Object or ArrayObject
         /// </summary>
+        /// <example>
         /// <code>
-        /// string array = JBuilder.ArrayObject("key", collection)
-        /// string obj = JBuilder.Object(("key", "value"), ("array", array.ObjectToToken()));
+        /// string array = JBuilder.Array(collection);
+        /// string arrayObject = JBuilder.ArrayObject("names", collection);
+        /// Debug.Log(JBuilder.Object(("names", array), ("arrayObject", arrayObject.ParseToJToken())));
         /// </code>
+        /// Stringify Result:
+        /// <code>
+        /// {
+        ///     "names": [
+        ///         {
+        ///             "Item1": "name1",
+        ///             "Item2": "surname1"
+        ///         },
+        ///         {
+        ///             "Item1": "name2",
+        ///             "Item2": "surname2"
+        ///         }
+        ///     ],
+        ///     "arrayObject": {
+        ///         "names": [
+        ///             {
+        ///                 "Item1": "name1",
+        ///                 "Item2": "surname1"
+        ///             },
+        ///             {
+        ///                 "Item1": "name2",
+        ///                 "Item2": "surname2"
+        ///             }
+        ///         ]
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         /// <returns>
         /// JToken
         /// </returns>
