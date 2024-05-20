@@ -1,7 +1,7 @@
 {
   "name": "com.modernwestern.unity-rest",
   "displayName": "UnityREST",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "REST Helper classes to requesting APIs",
   "keywords": [
     "Utils",

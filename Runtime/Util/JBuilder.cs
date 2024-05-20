@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -8,6 +7,7 @@ namespace UnityREST.Util
     public static class JBuilder
     {
         /// <returns>
+        /// String
         /// <code>
         /// {
         ///     "key0": "value 0",
@@ -17,13 +17,15 @@ namespace UnityREST.Util
         /// }
         /// </code>
         /// </returns>
-        public static string Object(params (string key, string value)[] pairs)
+        public static string Object<T>(params (string key, T value)[] pairs)
         {
             var payload = new JObject();
 
             foreach (var pair in pairs)
             {
-                payload.Add(pair.key, pair.value);
+                var token = new TokenizedObject<T>(pair.value);
+
+                payload.Add(pair.key, token);
             }
 
             return JsonConvert.SerializeObject(payload);
@@ -32,6 +34,7 @@ namespace UnityREST.Util
         /// <param name="key">Key name</param>
         /// <param name="collection">Array of objects of type T</param>
         /// <returns>
+        /// String
         /// <code>
         /// {
         ///     "key": [
@@ -55,6 +58,7 @@ namespace UnityREST.Util
 
         /// <param name="collection">Array of objects of type T</param>
         /// <returns>
+        /// String
         /// <code>
         /// [
         ///     {   "element": "0"  },
@@ -63,9 +67,44 @@ namespace UnityREST.Util
         /// ]
         /// </code>
         /// </returns>
-        public static string Array<T>(IEnumerable<T> collection)
+        public static JToken Array<T>(IEnumerable<T> collection)
         {
-            return JToken.FromObject(collection.ToArray()).ToString(Formatting.None);
+            return JToken.FromObject(collection);
+        }
+
+        /// <summary>
+        /// Returns a JToken from an Object or ArrayObject
+        /// </summary>
+        /// <code>
+        /// string array = JBuilder.ArrayObject("key", collection)
+        /// string obj = JBuilder.Object(("key", "value"), ("array", array.ObjectToToken()));
+        /// </code>
+        /// <returns>
+        /// JToken
+        /// </returns>
+        public static JToken ParseToJToken(this string value)
+        {
+            return JToken.Parse(value);
+        }
+    }
+
+    public class TokenizedObject<T>
+    {
+        protected JToken token { get; }
+
+        public TokenizedObject(T type)
+        {
+            token = JToken.FromObject(type);
+        }
+
+        public static implicit operator JToken(TokenizedObject<T> tokenizedObject)
+        {
+            return tokenizedObject.token;
+        }
+
+        public static implicit operator string(TokenizedObject<T> tokenizedObject)
+        {
+            return tokenizedObject.token.ToString(Formatting.None);
         }
     }
 }
