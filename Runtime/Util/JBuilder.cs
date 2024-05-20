@@ -81,7 +81,9 @@ namespace UnityREST.Util
         /// string arrayObject = JBuilder.ArrayObject("names", collection);
         /// Debug.Log(JBuilder.Object(("names", array), ("arrayObject", arrayObject.ParseToJToken())));
         /// </code>
-        /// Stringify Result:
+        /// </example>
+        /// <returns>
+        /// JToken
         /// <code>
         /// {
         ///     "names": [
@@ -108,9 +110,6 @@ namespace UnityREST.Util
         ///     }
         /// }
         /// </code>
-        /// </example>
-        /// <returns>
-        /// JToken
         /// </returns>
         public static JToken ParseToJToken(this string value)
         {
