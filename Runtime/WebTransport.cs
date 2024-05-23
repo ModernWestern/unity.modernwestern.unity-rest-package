@@ -229,12 +229,27 @@ namespace UnityREST
 
         #region Put
 
+        public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback)
+        {
+            yield return PATCH(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PATCH(string uri, string data, Action<WebResult> resultCallback)
+        {
+            yield return PUT(uri, data, resultCallback, true);
+        }
+
         public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
             yield return PUT(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
         public IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback)
+        {
+            yield return PUT(uri, data, resultCallback, false);
+        }
+
+        private IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
         {
 #if UNITY_EDITOR
 
@@ -247,6 +262,11 @@ namespace UnityREST
             while (retryAttempts < _apiConfig.MaxRetryAttempts)
             {
                 webRequest = UnityWebRequest.Put(uri, data);
+
+                if (isPatch)
+                {
+                    webRequest.method = "Patch";
+                }
 
                 webRequest.uploadHandler.contentType = _apiConfig.JsonContentType;
 
