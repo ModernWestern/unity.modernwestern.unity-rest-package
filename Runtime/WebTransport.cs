@@ -253,7 +253,7 @@ namespace UnityREST
         {
 #if UNITY_EDITOR
 
-            Debug.Log($"PUT data:\n{data}");
+            Debug.Log($"{(isPatch ? "PATCH" : "PUT")} data:\n{data}");
 #endif
             var retryAttempts = 0;
 
