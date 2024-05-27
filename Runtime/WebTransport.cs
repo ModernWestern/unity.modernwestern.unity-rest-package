@@ -11,25 +11,22 @@ namespace UnityREST
 
     public class WebTransport : IWebTransport
     {
-        private readonly APIConfig _apiConfig;
+        protected const string AuthHeaderFieldName = "Authorization";
 
-        private readonly Dictionary<string, string> _headerValues;
+        protected readonly Dictionary<string, string> HeaderValues;
+
+        protected readonly APIConfig APIConfig;
 
         public WebTransport(APIConfig apiConfig)
         {
-            _apiConfig = apiConfig;
-            _headerValues = new Dictionary<string, string>();
+            APIConfig = apiConfig;
+
+            HeaderValues = new Dictionary<string, string>();
 
             if (apiConfig.TryGetBearerToken(out var token))
             {
-                _headerValues["Authorization"] = $"Bearer {token}";
+                HeaderValues[AuthHeaderFieldName] = $"Bearer {token}";
             }
-        }
-
-        public WebTransport(APIConfig apiConfig, Dictionary<string, string> headers)
-        {
-            _apiConfig = apiConfig;
-            _headerValues = headers;
         }
 
         #region Get
@@ -55,16 +52,16 @@ namespace UnityREST
 
             var webRequest = new UnityWebRequest();
 
-            while (retryAttempts < _apiConfig.MaxRetryAttempts)
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
             {
                 webRequest = UnityWebRequest.Get(uri);
 
-                foreach (var header in _headerValues)
+                foreach (var header in HeaderValues)
                 {
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
 
-                webRequest.timeout = _apiConfig.Timeout;
+                webRequest.timeout = APIConfig.Timeout;
 
                 yield return webRequest.SendWebRequest();
 
@@ -77,9 +74,9 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(_apiConfig.RetryDelay);
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
 
-                if (retryAttempts < _apiConfig.MaxRetryAttempts)
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
                     webRequest.Dispose();
                 }
@@ -113,7 +110,7 @@ namespace UnityREST
 
             var webRequest = new UnityWebRequest();
 
-            while (retryAttempts < _apiConfig.MaxRetryAttempts)
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
             {
                 var formSections = new List<IMultipartFormSection>();
 
@@ -121,12 +118,12 @@ namespace UnityREST
 
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
 
-                foreach (var headerValue in _headerValues)
+                foreach (var headerValue in HeaderValues)
                 {
                     webRequest.SetRequestHeader(headerValue.Key, headerValue.Value);
                 }
 
-                webRequest.timeout = _apiConfig.Timeout;
+                webRequest.timeout = APIConfig.Timeout;
 
                 yield return webRequest.SendWebRequest();
 
@@ -142,9 +139,9 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(_apiConfig.RetryDelay);
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
 
-                if (retryAttempts < _apiConfig.MaxRetryAttempts)
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
                     webRequest.Dispose();
                 }
@@ -178,7 +175,7 @@ namespace UnityREST
 
             var webRequest = new UnityWebRequest();
 
-            while (retryAttempts < _apiConfig.MaxRetryAttempts)
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
             {
                 var bodyData = System.Text.Encoding.UTF8.GetBytes(body);
 
@@ -186,9 +183,9 @@ namespace UnityREST
 
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyData);
 
-                webRequest.timeout = _apiConfig.Timeout;
+                webRequest.timeout = APIConfig.Timeout;
 
-                foreach (var header in _headerValues)
+                foreach (var header in HeaderValues)
                 {
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
@@ -204,9 +201,9 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(_apiConfig.RetryDelay);
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
 
-                if (retryAttempts < _apiConfig.MaxRetryAttempts)
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
                     webRequest.Dispose();
                 }
@@ -259,7 +256,7 @@ namespace UnityREST
 
             var webRequest = new UnityWebRequest();
 
-            while (retryAttempts < _apiConfig.MaxRetryAttempts)
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
             {
                 webRequest = UnityWebRequest.Put(uri, data);
 
@@ -268,11 +265,11 @@ namespace UnityREST
                     webRequest.method = "Patch";
                 }
 
-                webRequest.uploadHandler.contentType = _apiConfig.JsonContentType;
+                webRequest.uploadHandler.contentType = APIConfig.JsonContentType;
 
-                webRequest.timeout = _apiConfig.Timeout;
+                webRequest.timeout = APIConfig.Timeout;
 
-                foreach (var header in _headerValues)
+                foreach (var header in HeaderValues)
                 {
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
@@ -288,9 +285,9 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(_apiConfig.RetryDelay);
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
 
-                if (retryAttempts < _apiConfig.MaxRetryAttempts)
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
                     webRequest.Dispose();
                 }
