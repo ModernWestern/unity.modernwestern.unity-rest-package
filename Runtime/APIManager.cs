@@ -29,20 +29,20 @@ namespace UnityREST
             _paths = apiPaths;
         }
 
-        protected void SignIn(string token)
+        protected static void SignIn(string token)
         {
             SaveToken(token);
             transport.SignIn(token);
         }
 
-        protected void SignIn()
+        protected static void SignIn()
         {
             transport.SignOut();
 
             DeleteToken();
         }
 
-        protected string GetCacheToken()
+        protected static string GetCacheToken()
         {
             if (PlayerPrefs.HasKey(AuthTokenCache))
             {
@@ -57,7 +57,7 @@ namespace UnityREST
             return null;
         }
 
-        private void SaveToken(string token)
+        private static void SaveToken(string token)
         {
             var bytesToEncode = Encoding.UTF8.GetBytes(token);
 
