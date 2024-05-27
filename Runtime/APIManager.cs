@@ -19,9 +19,9 @@ namespace UnityREST
 
         protected virtual void Awake()
         {
-            CoroutineRunner += CoroutineRunnerHandler;
-
             transport = new WebTransport(apiConfig ?? ScriptableObject.CreateInstance<APIConfig>());
+
+            CoroutineRunner += CoroutineRunnerHandler;
 
             _paths = apiPaths;
         }

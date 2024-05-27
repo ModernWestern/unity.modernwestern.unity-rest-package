@@ -23,11 +23,39 @@ namespace UnityREST
 
             HeaderValues = new Dictionary<string, string>();
 
-            if (apiConfig.TryGetBearerToken(out var token))
+            if (APIConfig.TryGetBearerToken(out var token))
             {
                 HeaderValues[AuthHeaderFieldName] = $"Bearer {token}";
             }
         }
+
+        #region Auth
+
+        public string GetAuthToken() => IsLoggedIn() ? HeaderValues[AuthHeaderFieldName] : null;
+
+        public bool IsLoggedIn() => HeaderValues.ContainsKey(AuthHeaderFieldName);
+
+        public void SignIn(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                Debug.LogError("Trying to authorize without a token");
+
+                return;
+            }
+
+            HeaderValues[AuthHeaderFieldName] = $"Bearer {token}";
+        }
+
+        public void SignOut()
+        {
+            if (IsLoggedIn())
+            {
+                HeaderValues.Remove(AuthHeaderFieldName);
+            }
+        }
+
+        #endregion
 
         #region Get
 
