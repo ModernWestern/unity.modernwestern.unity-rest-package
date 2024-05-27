@@ -1,11 +1,14 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Text;
 
 namespace UnityREST
 {
     public abstract class APIManager : MonoBehaviour
     {
+        protected const string AuthTokenCache = "AuthorizationTokenCache";
+
         [SerializeField] protected APIPaths apiPaths;
 
         [Header("Overrides*"), Space, SerializeField]
@@ -25,6 +28,53 @@ namespace UnityREST
 
             _paths = apiPaths;
         }
+
+        protected void SignIn(string token)
+        {
+            SaveToken(token);
+            transport.SignIn(token);
+        }
+
+        protected void SignIn()
+        {
+            transport.SignOut();
+
+            DeleteToken();
+        }
+
+        protected string GetCacheToken()
+        {
+            if (PlayerPrefs.HasKey(AuthTokenCache))
+            {
+                var tokenBase64 = PlayerPrefs.GetString(AuthTokenCache, null);
+
+                if (tokenBase64 != null)
+                {
+                    return Encoding.UTF8.GetString(Convert.FromBase64String(tokenBase64));
+                }
+            }
+
+            return null;
+        }
+
+        private void SaveToken(string token)
+        {
+            var bytesToEncode = Encoding.UTF8.GetBytes(token);
+
+            var encodedToken = Convert.ToBase64String(bytesToEncode);
+
+            PlayerPrefs.SetString(AuthTokenCache, encodedToken);
+
+            PlayerPrefs.Save();
+        }
+
+        private static void DeleteToken()
+        {
+            PlayerPrefs.DeleteKey(AuthTokenCache);
+
+            PlayerPrefs.Save();
+        }
+
 
         protected static Coroutine StartRequest(string endpointName, Func<string, IEnumerator> path)
         {

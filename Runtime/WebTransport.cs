@@ -31,9 +31,9 @@ namespace UnityREST
 
         #region Auth
 
-        public string GetAuthToken() => IsLoggedIn() ? HeaderValues[AuthHeaderFieldName] : null;
+        public string GetAuthToken => IsLoggedIn ? HeaderValues[AuthHeaderFieldName] : null;
 
-        public bool IsLoggedIn() => HeaderValues.ContainsKey(AuthHeaderFieldName);
+        public bool IsLoggedIn => HeaderValues.ContainsKey(AuthHeaderFieldName);
 
         public void SignIn(string token)
         {
@@ -49,7 +49,7 @@ namespace UnityREST
 
         public void SignOut()
         {
-            if (IsLoggedIn())
+            if (IsLoggedIn)
             {
                 HeaderValues.Remove(AuthHeaderFieldName);
             }
