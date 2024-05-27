@@ -31,11 +31,11 @@ namespace UnityREST
 
         #region Auth
 
-        public string GetAuthToken => IsLoggedIn ? HeaderValues[AuthHeaderFieldName] : null;
+        public string GetToken => HasToken ? HeaderValues[AuthHeaderFieldName] : null;
 
-        public bool IsLoggedIn => HeaderValues.ContainsKey(AuthHeaderFieldName);
+        public bool HasToken => HeaderValues.ContainsKey(AuthHeaderFieldName);
 
-        public void SignIn(string token)
+        public void SetAuthToken(string token)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -49,7 +49,7 @@ namespace UnityREST
 
         public void SignOut()
         {
-            if (IsLoggedIn)
+            if (HasToken)
             {
                 HeaderValues.Remove(AuthHeaderFieldName);
             }

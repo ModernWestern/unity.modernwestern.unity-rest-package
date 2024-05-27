@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Text;
 using UnityEngine;
 using System.Collections;
-using System.Text;
 
 namespace UnityREST
 {
@@ -29,13 +29,14 @@ namespace UnityREST
             _paths = apiPaths;
         }
 
-        protected static void SignIn(string token)
+        protected static void SetAuth(string token)
         {
+            transport.SetAuthToken(token);
+
             SaveToken(token);
-            transport.SignIn(token);
         }
 
-        protected static void SignIn()
+        protected static void SignOut()
         {
             transport.SignOut();
 
