@@ -70,12 +70,16 @@ namespace UnityREST
             try
             {
                 data = JsonConvert.DeserializeObject<T>(result.ResponseText);
-
+                
+#if UNITY_EDITOR
                 Debug.Log($"<b>Data result [{typeof(T).Name}] - status: {(data != null ? "<color=green>ok</color>" : "<color=red>null</color>")}</b> ⤴");
+#endif
             }
             catch (Exception e)
             {
+#if UNITY_EDITOR
                 Debug.LogError($"Error attempting to deserialize to type [{typeof(T).Name}] from data {result.ResponseText}\nStacktrace:\n{e.StackTrace}");
+#endif
             }
         }
     }

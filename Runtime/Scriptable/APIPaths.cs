@@ -24,9 +24,10 @@ namespace UnityREST
             {
                 return $"{scheme}://{domain}/{resource.path}";
             }
-
+#if UNITY_EDITOR
+            
             Debug.Log($"The EndPoint with [{resourceName}] does not exists");
-
+#endif
             return null;
         }
     }

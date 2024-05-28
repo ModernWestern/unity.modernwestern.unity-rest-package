@@ -342,7 +342,9 @@ namespace UnityREST
         {
             if (result.HasError())
             {
+#if UNITY_EDITOR
                 Debug.LogError($"There was an error requesting: {result}");
+#endif
             }
         }
 
