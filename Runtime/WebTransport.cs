@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnityREST
 {
@@ -22,6 +23,14 @@ namespace UnityREST
             APIConfig = apiConfig;
 
             HeaderValues = new Dictionary<string, string>();
+
+            if (APIConfig.HasCORS)
+            {
+                foreach (var item in CORSHeaders.GetHeaders())
+                {
+                    HeaderValues.Add(item.key, item.value);
+                }
+            }
 
             if (APIConfig.TryGetBearerToken(out var token))
             {
@@ -116,7 +125,9 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
-            Debug.Log($"Response from GET for uri: {uri}\n{webRequest.downloadHandler.text}");
+            var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
+
+            Debug.Log($"Response from GET for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
 #endif
             resultCallback?.Invoke(webResult);
 
@@ -243,7 +254,9 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
-            Debug.Log($"Response from POST for uri: {uri}\n{webRequest.downloadHandler.text}");
+            var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
+
+            Debug.Log($"Response from POST for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
 #endif
             resultCallback?.Invoke(webResult);
 
@@ -327,7 +340,9 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
-            Debug.Log($"Response from PUT for uri: {uri}\n{webRequest.downloadHandler.text}");
+            var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
+
+            Debug.Log($"Response from PUT for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
 #endif
             resultCallback?.Invoke(webResult);
 
