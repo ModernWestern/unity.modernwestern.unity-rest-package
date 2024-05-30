@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
+using System.Linq;
 using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UnityREST
 {
@@ -125,10 +125,11 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
+#endif
             var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
 
             Debug.Log($"Response from GET for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
-#endif
+
             resultCallback?.Invoke(webResult);
 
             webRequest.Dispose();
@@ -192,8 +193,12 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
-            Debug.Log($"Response from POST for uri:{uri}\n{webRequest.downloadHandler.text}");
+            // Debug.Log($"Response from POST for uri:{uri}\n{webRequest.downloadHandler.text}");
 #endif
+            var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
+
+            Debug.Log($"Response from POST for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
+            
             resultCallback?.Invoke(webResult);
 
             webRequest.Dispose();
@@ -254,10 +259,11 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
+#endif
             var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
 
             Debug.Log($"Response from POST for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
-#endif
+
             resultCallback?.Invoke(webResult);
 
             webRequest.Dispose();
@@ -340,10 +346,11 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
+#endif
             var headers = webRequest.GetResponseHeaders().Aggregate(string.Empty, (current, header) => current + header.Key + ": " + header.Value);
 
-            Debug.Log($"Response from PUT for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
-#endif
+            Debug.Log($"Response from {(isPatch ? "PATCH" : "PUT")} for uri: {uri}\n{webRequest.downloadHandler.text}\nResponse Headers:\n{headers}");
+
             resultCallback?.Invoke(webResult);
 
             webRequest.Dispose();
