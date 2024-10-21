@@ -1,8 +1,10 @@
 {
   "name": "com.modernwestern.unity-rest",
+  "version": "1.0.9",
   "displayName": "UnityREST",
-  "version": "1.0.8",
   "description": "REST Helper classes to requesting APIs",
+  "unity": "2019.2",
+  "category": "Tool",
   "keywords": [
     "Utils",
     "Methods",
@@ -10,8 +12,14 @@
     "REST",
     "API"
   ],
-  "category": "Tool",
-  "type": "tool",
+  "author": {
+    "name": "Modern Western",
+    "url": "https://github.com/ModernWestern/"
+  },
+  "repository": {
+    "url": "https://github.com/ModernWestern/unity.modernwestern.unity-rest-package.git",
+    "type": "git"
+  },
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.1"
   }

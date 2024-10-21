@@ -12,6 +12,8 @@ namespace UnityREST
     public class WebTransport : IWebTransport
     {
         protected const string AuthHeaderFieldName = "Authorization";
+        
+        protected const string XApiKeyHeaderFieldName = "x-api-key";
 
         protected readonly Dictionary<string, string> HeaderValues;
 
@@ -26,6 +28,11 @@ namespace UnityREST
             if (APIConfig.TryGetBearerToken(out var token))
             {
                 HeaderValues[AuthHeaderFieldName] = $"Bearer {token}";
+            }
+
+            if (APIConfig.TryGetEnvironment(out var key))
+            {
+                HeaderValues[XApiKeyHeaderFieldName] = key;
             }
         }
 
