@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using UnityEngine;
 using System.Collections;
@@ -8,37 +8,35 @@ namespace UnityREST
     public abstract class APIManager : MonoBehaviour
     {
         protected const string AuthTokenCache = "AuthorizationTokenCache";
-
-        [SerializeField] protected APIPaths apiPaths;
-
-        [Header("Overrides*"), Space, SerializeField]
+        
+        [Header("Overrides"), Space, SerializeField]
         protected APIConfig apiConfig;
 
         private static event Func<IEnumerator, Coroutine> CoroutineRunner;
 
-        protected static WebTransport transport { get; private set; }
+        private static event Func<APIConfig> APIConfig;
 
-        private static APIPaths _paths;
-
+        protected static WebTransport Transport { get; private set; }
+        
         protected virtual void Awake()
         {
-            transport = new WebTransport(apiConfig ?? ScriptableObject.CreateInstance<APIConfig>());
+            Transport = new WebTransport(apiConfig ?? ScriptableObject.CreateInstance<APIConfig>());
 
-            CoroutineRunner += CoroutineRunnerHandler;
+            CoroutineRunner += StartCoroutine;
 
-            _paths = apiPaths;
+            APIConfig += () => apiConfig;
         }
-
+        
         protected static void SetAuth(string token)
         {
-            transport.SetAuthToken(token);
+            Transport.SetAuthToken(token);
 
             SaveToken(token);
         }
 
         protected static void SignOut()
         {
-            transport.SignOut();
+            Transport.SignOut();
 
             DeleteToken();
         }
@@ -75,22 +73,20 @@ namespace UnityREST
 
             PlayerPrefs.Save();
         }
-
-
+        
         protected static Coroutine StartRequest(string endpointName, Func<string, IEnumerator> path)
         {
-            if (_paths.GetPath(endpointName) is var validPath)
+            if (!APIConfig!().TryGetEnvironment(out var env))
             {
-                return CoroutineRunner?.Invoke(path(validPath));
+                return null;
+            }
+            
+            if (env.apiPaths.GetPath(endpointName) is var validPath)
+            {
+                return CoroutineRunner!.Invoke(path(validPath));
             }
 
-            return default;
+            return null;
         }
-
-        #region Handlers
-
-        private Coroutine CoroutineRunnerHandler(IEnumerator routine) => StartCoroutine(routine);
-
-        #endregion
     }
 }

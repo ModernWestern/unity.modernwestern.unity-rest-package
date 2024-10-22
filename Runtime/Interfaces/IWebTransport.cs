@@ -10,11 +10,19 @@ namespace UnityREST.Interfaces
         IEnumerator GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback);
         IEnumerator GET<T>(string uri, Action<WebResult<T>> resultCallback);
         IEnumerator GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback);
+        
         IEnumerator POST(string uri, Action<WebResult> resultCallback);
         IEnumerator POST<T>(string uri, Action<WebResult<T>> resultCallback);
         IEnumerator POST(string uri, string body, Action<WebResult> resultCallback);
+        IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback);
+        IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args);
         IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback);
+        IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args);
+        
         IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback);
+        IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback);
+        IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args);
         IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback);
+        IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args);
     }
 }

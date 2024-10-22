@@ -36,15 +36,15 @@ namespace UnityREST
             return false;
         }
 
-        public bool TryGetEnvironment(out string key)
+        public bool TryGetEnvironment(out Environment environment)
         {
-            if (environments.FirstOrDefault(env => env.environmentType.Equals(targetEnvironment)) is { } environment)
+            if (environments.FirstOrDefault(e => e.EnvironmentType.Equals(targetEnvironment)) is { } env)
             {
-                key = environment.key;
+                environment = env;
                 return true;
             }
 
-            key = string.Empty;
+            environment = null;
             return false;
         }
     }
@@ -57,18 +57,20 @@ namespace UnityREST
         public float retryDelay = 0.25f;
         public string jsonContentType = "application/json";
     }
-    
+
     [Serializable]
     public class Environment
     {
-        public EnvironmentType environmentType = EnvironmentType.Development;
-        public string key;
+        public APIPaths apiPaths;
+        public string apiKey;
+
+        public EnvironmentType EnvironmentType => apiPaths.GetEnvironment;
     }
 
     public enum EnvironmentType
     {
         Development = 0,
-        Staging = 1,
+        [InspectorName("Staging | QA")] Staging = 1,
         Production = 2,
         Release = 3
     }

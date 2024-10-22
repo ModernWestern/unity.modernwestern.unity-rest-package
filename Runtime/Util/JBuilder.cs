@@ -6,6 +6,16 @@ namespace UnityREST.Util
 {
     public static class JBuilder
     {
+        /// <summary>
+        /// Serializes the specified object to a JSON string using formatting.
+        /// </summary>
+        /// <param name="value">The object to serialize.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static string Object(object value)
+        {
+            return JsonConvert.SerializeObject(value, Formatting.Indented);
+        }
+        
         /// <returns>
         /// String
         /// <code>
@@ -28,7 +38,7 @@ namespace UnityREST.Util
                 payload.Add(pair.key, token);
             }
 
-            return JsonConvert.SerializeObject(payload, Formatting.Indented);
+            return Object(payload);
         }
 
         /// <param name="key">Key name</param>
@@ -53,7 +63,7 @@ namespace UnityREST.Util
                 { key, Array(collection) }
             };
 
-            return JsonConvert.SerializeObject(payload, Formatting.Indented);
+            return Object(payload);
         }
 
         /// <param name="collection">Array of objects of type T</param>

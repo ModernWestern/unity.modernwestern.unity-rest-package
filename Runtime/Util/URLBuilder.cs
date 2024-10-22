@@ -68,5 +68,12 @@ namespace UnityREST.Util
 
             return parameterValue;
         }
+
+        public static string Args(string path, params string[] args)
+        {
+            var fullPath = path + (args != null ? $"?{string.Join("&", args)}" : "");
+
+            return fullPath;
+        }
     }
 }

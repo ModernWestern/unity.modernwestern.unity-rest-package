@@ -30,9 +30,9 @@ namespace UnityREST
                 HeaderValues[AuthHeaderFieldName] = $"Bearer {token}";
             }
 
-            if (APIConfig.TryGetEnvironment(out var key))
+            if (APIConfig.TryGetEnvironment(out var env))
             {
-                HeaderValues[XApiKeyHeaderFieldName] = key;
+                HeaderValues[XApiKeyHeaderFieldName] = env.apiKey;
             }
         }
 
@@ -195,9 +195,24 @@ namespace UnityREST
             webRequest.Dispose();
         }
 
+        public IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            yield return POST(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return POST(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+        
         public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback)
         {
             yield return POST(uri, body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+        
+        public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return POST(URLBuilder.Args(uri, args), body, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
         public IEnumerator POST(string uri, string body, Action<WebResult> resultCallback)
@@ -261,24 +276,54 @@ namespace UnityREST
 
         #region Put
 
+        public IEnumerator PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            yield return PATCH(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PATCH(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+        
         public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
             yield return PATCH(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+        
+        public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PATCH(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
         public IEnumerator PATCH(string uri, string data, Action<WebResult> resultCallback)
         {
             yield return PUT(uri, data, resultCallback, true);
         }
-
+        
         public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
             yield return PUT(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
+        public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PUT(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
         public IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback)
         {
             yield return PUT(uri, data, resultCallback, false);
+        }
+
+        public IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            yield return PUT(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+        
+        public IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PUT(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
         private IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)

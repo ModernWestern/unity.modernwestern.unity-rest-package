@@ -14,10 +14,20 @@ namespace UnityREST
     [CreateAssetMenu(fileName = "New APIPaths", menuName = "UnityREST/APIPaths", order = 0)]
     public class APIPaths : ScriptableObject
     {
-        [SerializeField] private Scheme scheme;
-        [SerializeField] private string domain;
-        [SerializeField] private Resource[] resources;
+        [SerializeField]
+        private Scheme scheme;
+        
+        [SerializeField]
+        private EnvironmentType environment = EnvironmentType.Development;
+        
+        [SerializeField]
+        private string domain;
+        
+        [SerializeField]
+        private Resource[] resources;
 
+        public EnvironmentType GetEnvironment => environment;
+        
         public string GetPath(string resourceName)
         {
             if (resources.FirstOrDefault(r => r.name == resourceName) is { } resource)
