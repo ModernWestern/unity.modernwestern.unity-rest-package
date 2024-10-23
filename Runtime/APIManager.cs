@@ -81,7 +81,7 @@ namespace UnityREST
                 return null;
             }
             
-            if (env.apiPaths.GetPath(endpointName) is var validPath)
+            if (env.GetPath(endpointName) is var validPath)
             {
                 return CoroutineRunner!.Invoke(path(validPath));
             }

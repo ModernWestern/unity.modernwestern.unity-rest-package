@@ -4,11 +4,13 @@ using UnityEngine;
 
 namespace UnityREST
 {
-    [CreateAssetMenu(fileName = "New APIConfig", menuName = "UnityREST/APIConfig", order = 1)]
+    using Editor;
+
+    [CreateAssetMenu(fileName = "New APIConfig", menuName = "UnityREST/APIConfig", order = -1)]
     public class APIConfig : ScriptableObject
     {
-        [SerializeField]
-        private EnvironmentType targetEnvironment = EnvironmentType.Development;
+        [ReadOnly, SerializeField]
+        private EnvironmentType currentEnvironment = EnvironmentType.None;
         
         [Space, SerializeField]
         private Settings settings;
@@ -19,6 +21,19 @@ namespace UnityREST
         [Space, SerializeField]
         private Environment[] environments;
 
+        #region Editor
+
+        public Environment[] Environments => environments;
+
+        public EnvironmentType TargetEnvironment
+        {
+            get => currentEnvironment;
+
+            set => currentEnvironment = value;
+        }
+
+        #endregion
+        
         public int Timeout => settings.timeout;
         public int MaxRetryAttempts => settings.maxRetryAttempts;
         public float RetryDelay => settings.retryDelay;
@@ -29,22 +44,26 @@ namespace UnityREST
             if (!string.IsNullOrEmpty(bearerToken))
             {
                 token = bearerToken;
+                
                 return true;
             }
 
             token = string.Empty;
+            
             return false;
         }
 
         public bool TryGetEnvironment(out Environment environment)
         {
-            if (environments.FirstOrDefault(e => e.EnvironmentType.Equals(targetEnvironment)) is { } env)
+            if (environments.FirstOrDefault(e => e.Type.Equals(currentEnvironment)) is { } env)
             {
                 environment = env;
+                
                 return true;
             }
 
             environment = null;
+            
             return false;
         }
     }
@@ -60,18 +79,27 @@ namespace UnityREST
 
     [Serializable]
     public class Environment
-    {
-        public APIPaths apiPaths;
-        public string apiKey;
-
-        public EnvironmentType EnvironmentType => apiPaths.GetEnvironment;
+    { 
+        [SerializeField] private APIEnvironment environment;
+        
+        public string APIKey => environment.GetAPItKey;
+        
+        public EnvironmentType Type => environment.GetEnvironment;
+        
+        public string GetPath(string resourceName) => environment.GetPath(resourceName);
+        
+        public static implicit operator bool(Environment environment)
+        {
+            return environment.environment != null;
+        }
     }
 
     public enum EnvironmentType
     {
-        Development = 0,
-        [InspectorName("Staging | QA")] Staging = 1,
-        Production = 2,
-        Release = 3
+        None = 0,
+        Development = 1,
+        [InspectorName("Staging | QA")] Staging = 2,
+        Production = 3,
+        Release = 4
     }
 }

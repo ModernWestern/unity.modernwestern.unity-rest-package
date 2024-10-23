@@ -32,7 +32,7 @@ namespace UnityREST
 
             if (APIConfig.TryGetEnvironment(out var env))
             {
-                HeaderValues[XApiKeyHeaderFieldName] = env.apiKey;
+                HeaderValues[XApiKeyHeaderFieldName] = env.APIKey;
             }
         }
 
