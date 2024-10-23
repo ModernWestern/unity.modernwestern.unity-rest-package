@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.Networking;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace UnityREST
@@ -66,22 +66,27 @@ namespace UnityREST
 
         #region Get
 
-        public IEnumerator GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
+        public void GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
         {
-            yield return GET(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            GET(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback)
+        public void GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback)
         {
-            yield return GET(URLBuilder.Parameters(uri, parameters), resultCallback);
+            GET(URLBuilder.Parameters(uri, parameters), resultCallback);
         }
 
-        public IEnumerator GET<T>(string uri, Action<WebResult<T>> resultCallback)
+        public void GET<T>(string uri, Action<WebResult<T>> resultCallback)
         {
-            yield return GET(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            GET(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator GET(string uri, Action<WebResult> resultCallback)
+        public void GET(string uri, Action<WebResult> resultCallback)
+        {
+            _GET(uri, resultCallback).Forget();
+        }
+
+        public async UniTaskVoid _GET(string uri, Action<WebResult> resultCallback)
         {
             var retryAttempts = 0;
 
@@ -98,7 +103,7 @@ namespace UnityREST
 
                 webRequest.timeout = APIConfig.Timeout;
 
-                yield return webRequest.SendWebRequest();
+                await webRequest.SendWebRequest();
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -109,7 +114,7 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(APIConfig.RetryDelay);
+                await UniTask.WaitForSeconds(APIConfig.RetryDelay);
 
                 if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
@@ -134,12 +139,17 @@ namespace UnityREST
 
         #region Post
 
-        public IEnumerator POST<T>(string uri, Action<WebResult<T>> resultCallback)
+        public void POST<T>(string uri, Action<WebResult<T>> resultCallback)
         {
-            yield return POST(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            _POST(uri, result => resultCallback?.Invoke(new WebResult<T>(result))).Forget();
         }
 
-        public IEnumerator POST(string uri, Action<WebResult> resultCallback)
+        public void POST(string uri, Action<WebResult> resultCallback)
+        {
+            _POST(uri, resultCallback).Forget();
+        }
+        
+        public async UniTaskVoid _POST(string uri, Action<WebResult> resultCallback)
         {
             var retryAttempts = 0;
 
@@ -160,7 +170,7 @@ namespace UnityREST
 
                 webRequest.timeout = APIConfig.Timeout;
 
-                yield return webRequest.SendWebRequest();
+                await webRequest.SendWebRequest();
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -174,7 +184,7 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(APIConfig.RetryDelay);
+                await UniTask.WaitForSeconds(APIConfig.RetryDelay);
 
                 if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
@@ -195,27 +205,32 @@ namespace UnityREST
             webRequest.Dispose();
         }
 
-        public IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        public void POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
         {
-            yield return POST(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+            POST(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        public void POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
         {
-            yield return POST(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
-        }
-        
-        public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback)
-        {
-            yield return POST(uri, body, result => resultCallback?.Invoke(new WebResult<T>(result)));
-        }
-        
-        public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-            yield return POST(URLBuilder.Args(uri, args), body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            POST(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator POST(string uri, string body, Action<WebResult> resultCallback)
+        public void POST<T>(string uri, string body, Action<WebResult<T>> resultCallback)
+        {
+            POST(uri, body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public void POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            POST(URLBuilder.Args(uri, args), body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public void POST(string uri, string body, Action<WebResult> resultCallback)
+        {
+            _POST(uri, body, resultCallback).Forget();
+        }
+
+        public async UniTaskVoid _POST(string uri, string body, Action<WebResult> resultCallback)
         {
 #if UNITY_EDITOR
 
@@ -240,7 +255,7 @@ namespace UnityREST
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
 
-                yield return webRequest.SendWebRequest();
+                await webRequest.SendWebRequest();
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -251,7 +266,7 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(APIConfig.RetryDelay);
+                await UniTask.WaitForSeconds(APIConfig.RetryDelay);
 
                 if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
@@ -276,57 +291,62 @@ namespace UnityREST
 
         #region Put
 
-        public IEnumerator PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        public void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
         {
-            yield return PATCH(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+            PATCH(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        public void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
         {
-            yield return PATCH(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
-        }
-        
-        public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback)
-        {
-            yield return PATCH(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
-        }
-        
-        public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-            yield return PATCH(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            PATCH(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator PATCH(string uri, string data, Action<WebResult> resultCallback)
+        public void PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
-            yield return PUT(uri, data, resultCallback, true);
-        }
-        
-        public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
-        {
-            yield return PUT(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            PATCH(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
+        public void PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
         {
-            yield return PUT(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+            PATCH(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        public IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback)
+        public void PATCH(string uri, string data, Action<WebResult> resultCallback)
         {
-            yield return PUT(uri, data, resultCallback, false);
+            PUT(uri, data, resultCallback, true);
         }
 
-        public IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        public void PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
         {
-            yield return PUT(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
-        }
-        
-        public IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-            yield return PUT(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+            PUT(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
 
-        private IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
+        public void PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            PUT(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public void PUT(string uri, string data, Action<WebResult> resultCallback)
+        {
+            PUT(uri, data, resultCallback, false);
+        }
+
+        public void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            PUT(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            PUT(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public void PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
+        {
+            _PUT(uri, data, resultCallback, isPatch).Forget();
+        }
+
+        public async UniTaskVoid _PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
         {
 #if UNITY_EDITOR
 
@@ -354,7 +374,7 @@ namespace UnityREST
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
 
-                yield return webRequest.SendWebRequest();
+                await webRequest.SendWebRequest();
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -365,7 +385,7 @@ namespace UnityREST
 
                 retryAttempts++;
 
-                yield return new WaitForSeconds(APIConfig.RetryDelay);
+                await UniTask.WaitForSeconds(APIConfig.RetryDelay);
 
                 if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
