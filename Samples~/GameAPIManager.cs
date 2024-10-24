@@ -14,25 +14,25 @@ namespace UnityREST
         // Get Example
         public static void GetObject(Action<WebResult<Object>> callback)
         {
-            StartRequest("endpointName", path => transport.GET(path, callback));
+            StartRequest("endpointName", path => _webTransport.GET(path, callback));
         }
 
         // Post Example 1 [String]
         public static void PostObject(string key, string value, Action<WebResult<Object>> callback)
         {
-            StartRequest("endpointName", path => transport.POST(path, JBuilder.Object((key, value)), callback));
+            StartRequest("endpointName", path => _webTransport.POST(path, JBuilder.Object((key, value)), callback));
         }
 
         // Post Example 2 [List]
         public void PostArrayObject(string key, List<Object> list, Action<WebResult<Object>> callback)
         {
-            StartRequest("endpointName", path => transport.POST(path, JBuilder.ArrayObject(key, list), callback));
+            StartRequest("endpointName", path => _webTransport.POST(path, JBuilder.ArrayObject(key, list), callback));
         }
 
         // Post Example 3 [Array]
         public void PostArrayObject(string key, Object[] array, Action<WebResult<Object>> callback)
         {
-            StartRequest("endpointName", path => transport.POST(path, JBuilder.ArrayObject(key, array), callback));
+            StartRequest("endpointName", path => _webTransport.POST(path, JBuilder.ArrayObject(key, array), callback));
         }
     }
 }

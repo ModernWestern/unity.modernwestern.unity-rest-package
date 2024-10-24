@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using UnityEngine;
-using System.Collections;
 
 namespace UnityREST
 {
@@ -11,9 +10,7 @@ namespace UnityREST
         
         [Header("Overrides"), Space, SerializeField]
         protected APIConfig apiConfig;
-
-        private static event Func<IEnumerator, Coroutine> CoroutineRunner;
-
+        
         private static event Func<APIConfig> APIConfig;
 
         protected static WebTransport Transport { get; private set; }
@@ -21,9 +18,7 @@ namespace UnityREST
         protected virtual void Awake()
         {
             Transport = new WebTransport(apiConfig ?? ScriptableObject.CreateInstance<APIConfig>());
-
-            CoroutineRunner += StartCoroutine;
-
+            
             APIConfig += () => apiConfig;
         }
         
@@ -73,20 +68,18 @@ namespace UnityREST
 
             PlayerPrefs.Save();
         }
-        
-        protected static Coroutine StartRequest(string endpointName, Func<string, IEnumerator> path)
+
+        protected static void StartRequest(string endpointName, Action<string> path)
         {
             if (!APIConfig!().TryGetEnvironment(out var env))
             {
-                return null;
-            }
-            
-            if (env.GetPath(endpointName) is var validPath)
-            {
-                return CoroutineRunner!.Invoke(path(validPath));
+                return;
             }
 
-            return null;
+            if (env.GetPath(endpointName) is var validPath)
+            {
+                path(validPath);
+            }
         }
     }
 }
