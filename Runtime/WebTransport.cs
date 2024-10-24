@@ -1,8 +1,17 @@
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+
+#if UNITASK
+
+using Cysharp.Threading.Tasks;
+
+#else
+
+using System.Collections;
+
+#endif
 
 namespace UnityREST
 {
@@ -12,7 +21,7 @@ namespace UnityREST
     public class WebTransport : IWebTransport
     {
         protected const string AuthHeaderFieldName = "Authorization";
-        
+
         protected const string XApiKeyHeaderFieldName = "x-api-key";
 
         protected readonly Dictionary<string, string> HeaderValues;
@@ -64,6 +73,8 @@ namespace UnityREST
 
         #endregion
 
+#if UNITASK
+        
         #region Get
 
         public void GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
@@ -83,10 +94,10 @@ namespace UnityREST
 
         public void GET(string uri, Action<WebResult> resultCallback)
         {
-            _GET(uri, resultCallback).Forget();
+            Internal_GET(uri, resultCallback).Forget();
         }
 
-        public async UniTaskVoid _GET(string uri, Action<WebResult> resultCallback)
+        public async UniTaskVoid Internal_GET(string uri, Action<WebResult> resultCallback)
         {
             var retryAttempts = 0;
 
@@ -141,15 +152,15 @@ namespace UnityREST
 
         public void POST<T>(string uri, Action<WebResult<T>> resultCallback)
         {
-            _POST(uri, result => resultCallback?.Invoke(new WebResult<T>(result))).Forget();
+            Internal_POST(uri, result => resultCallback?.Invoke(new WebResult<T>(result))).Forget();
         }
 
         public void POST(string uri, Action<WebResult> resultCallback)
         {
-            _POST(uri, resultCallback).Forget();
+            Internal_POST(uri, resultCallback).Forget();
         }
-        
-        public async UniTaskVoid _POST(string uri, Action<WebResult> resultCallback)
+
+        public async UniTaskVoid Internal_POST(string uri, Action<WebResult> resultCallback)
         {
             var retryAttempts = 0;
 
@@ -227,10 +238,10 @@ namespace UnityREST
 
         public void POST(string uri, string body, Action<WebResult> resultCallback)
         {
-            _POST(uri, body, resultCallback).Forget();
+            Internal_POST(uri, body, resultCallback).Forget();
         }
 
-        public async UniTaskVoid _POST(string uri, string body, Action<WebResult> resultCallback)
+        public async UniTaskVoid Internal_POST(string uri, string body, Action<WebResult> resultCallback)
         {
 #if UNITY_EDITOR
 
@@ -343,10 +354,10 @@ namespace UnityREST
 
         public void PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
         {
-            _PUT(uri, data, resultCallback, isPatch).Forget();
+            Internal_PUT(uri, data, resultCallback, isPatch).Forget();
         }
 
-        public async UniTaskVoid _PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
+        public async UniTaskVoid Internal_PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
         {
 #if UNITY_EDITOR
 
@@ -407,6 +418,336 @@ namespace UnityREST
         }
 
         #endregion
+
+#else
+
+        #region Get
+
+        public IEnumerator GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
+        {
+            yield return GET(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback)
+        {
+            yield return GET(URLBuilder.Parameters(uri, parameters), resultCallback);
+        }
+
+        public IEnumerator GET<T>(string uri, Action<WebResult<T>> resultCallback)
+        {
+            yield return GET(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator GET(string uri, Action<WebResult> resultCallback)
+        {
+            var retryAttempts = 0;
+
+            var webRequest = new UnityWebRequest();
+
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
+            {
+                webRequest = UnityWebRequest.Get(uri);
+
+                foreach (var header in HeaderValues)
+                {
+                    webRequest.SetRequestHeader(header.Key, header.Value);
+                }
+
+                webRequest.timeout = APIConfig.Timeout;
+
+                yield return webRequest.SendWebRequest();
+
+                if (webRequest.result == UnityWebRequest.Result.Success)
+                {
+                    break;
+                }
+
+                if (webRequest.result == UnityWebRequest.Result.InProgress) continue;
+
+                retryAttempts++;
+
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
+
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
+                {
+                    webRequest.Dispose();
+                }
+            }
+
+            var webResult = new WebResult(webRequest);
+
+            LogIfError(webResult);
+
+#if UNITY_EDITOR
+
+            Debug.Log($"Response from GET for uri: {uri}\n{webRequest.downloadHandler.text}");
+#endif
+            resultCallback?.Invoke(webResult);
+
+            webRequest.Dispose();
+        }
+
+        #endregion
+
+        #region Post
+
+        public IEnumerator POST<T>(string uri, Action<WebResult<T>> resultCallback)
+        {
+            yield return POST(uri, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST(string uri, Action<WebResult> resultCallback)
+        {
+            var retryAttempts = 0;
+
+            var webRequest = new UnityWebRequest();
+
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
+            {
+                var formSections = new List<IMultipartFormSection>();
+
+                webRequest = UnityWebRequest.Post(uri, formSections);
+
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
+
+                foreach (var headerValue in HeaderValues)
+                {
+                    webRequest.SetRequestHeader(headerValue.Key, headerValue.Value);
+                }
+
+                webRequest.timeout = APIConfig.Timeout;
+
+                yield return webRequest.SendWebRequest();
+
+                if (webRequest.result == UnityWebRequest.Result.Success)
+                {
+                    break;
+                }
+
+                if (webRequest.result == UnityWebRequest.Result.InProgress)
+                {
+                    continue;
+                }
+
+                retryAttempts++;
+
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
+
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
+                {
+                    webRequest.Dispose();
+                }
+            }
+
+            var webResult = new WebResult(webRequest);
+
+            LogIfError(webResult);
+
+#if UNITY_EDITOR
+
+            Debug.Log($"Response from POST for uri:{uri}\n{webRequest.downloadHandler.text}");
+#endif
+            resultCallback?.Invoke(webResult);
+
+            webRequest.Dispose();
+        }
+
+        public IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            yield return POST(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return POST(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback)
+        {
+            yield return POST(uri, body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return POST(URLBuilder.Args(uri, args), body, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator POST(string uri, string body, Action<WebResult> resultCallback)
+        {
+#if UNITY_EDITOR
+
+            Debug.Log($"POST data:\n{body}");
+#endif
+            var retryAttempts = 0;
+
+            var webRequest = new UnityWebRequest();
+
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
+            {
+                var bodyData = System.Text.Encoding.UTF8.GetBytes(body);
+
+                webRequest = UnityWebRequest.PostWwwForm(uri, "");
+
+                webRequest.uploadHandler = new UploadHandlerRaw(bodyData);
+
+                webRequest.timeout = APIConfig.Timeout;
+
+                foreach (var header in HeaderValues)
+                {
+                    webRequest.SetRequestHeader(header.Key, header.Value);
+                }
+
+                yield return webRequest.SendWebRequest();
+
+                if (webRequest.result == UnityWebRequest.Result.Success)
+                {
+                    break;
+                }
+
+                if (webRequest.result == UnityWebRequest.Result.InProgress) continue;
+
+                retryAttempts++;
+
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
+
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
+                {
+                    webRequest.Dispose();
+                }
+            }
+
+            var webResult = new WebResult(webRequest, body);
+
+            LogIfError(webResult);
+
+#if UNITY_EDITOR
+
+            Debug.Log($"Response from POST for uri: {uri}\n{webRequest.downloadHandler.text}");
+#endif
+            resultCallback?.Invoke(webResult);
+
+            webRequest.Dispose();
+        }
+
+        #endregion
+
+        #region Put
+
+        public IEnumerator PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            yield return PATCH(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PATCH(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback)
+        {
+            yield return PATCH(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PATCH(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PATCH(string uri, string data, Action<WebResult> resultCallback)
+        {
+            yield return PUT(uri, data, resultCallback, true);
+        }
+
+        public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
+        {
+            yield return PUT(uri, data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
+        {
+            yield return PUT(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback)
+        {
+            yield return PUT(uri, data, resultCallback, false);
+        }
+
+        public IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
+        {
+            yield return PUT(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public IEnumerator PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
+
+
+        {
+            yield return PUT(URLBuilder.Args(uri, args), JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        private IEnumerator PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
+        {
+#if UNITY_EDITOR
+
+            Debug.Log($"{(isPatch ? "PATCH" : "PUT")} data:\n{data}");
+#endif
+            var retryAttempts = 0;
+
+            var webRequest = new UnityWebRequest();
+
+            while (retryAttempts < APIConfig.MaxRetryAttempts)
+            {
+                webRequest = UnityWebRequest.Put(uri, data);
+
+                if (isPatch)
+                {
+                    webRequest.method = "Patch";
+                }
+
+                webRequest.uploadHandler.contentType = APIConfig.JsonContentType;
+
+                webRequest.timeout = APIConfig.Timeout;
+
+                foreach (var header in HeaderValues)
+                {
+                    webRequest.SetRequestHeader(header.Key, header.Value);
+                }
+
+                yield return webRequest.SendWebRequest();
+
+                if (webRequest.result == UnityWebRequest.Result.Success)
+                {
+                    break;
+                }
+
+                if (webRequest.result == UnityWebRequest.Result.InProgress) continue;
+
+                retryAttempts++;
+
+                yield return new WaitForSeconds(APIConfig.RetryDelay);
+
+                if (retryAttempts < APIConfig.MaxRetryAttempts)
+                {
+                    webRequest.Dispose();
+                }
+            }
+
+            var webResult = new WebResult(webRequest, data);
+
+            LogIfError(webResult);
+
+#if UNITY_EDITOR
+
+            Debug.Log($"Response from PUT for uri: {uri}\n{webRequest.downloadHandler.text}");
+#endif
+            resultCallback?.Invoke(webResult);
+
+            webRequest.Dispose();
+        }
+
+        #endregion
+
+#endif
 
         #region Helpers
 
