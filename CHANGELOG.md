@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.1.3] - 2024-11-24
+An issue when a webrequest got locked was solved.
+
 ## [1.1.2] - 2024-11-24
 OpenUPM scopes added.
 

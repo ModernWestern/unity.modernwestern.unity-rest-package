@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -44,7 +45,12 @@ namespace UnityREST
 
                 webRequest.timeout = APIConfig.Timeout;
 
-                await webRequest.SendWebRequest();
+                var operation = webRequest.SendWebRequest();
+                
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -97,7 +103,12 @@ namespace UnityREST
 
                 webRequest.timeout = APIConfig.Timeout;
 
-                await webRequest.SendWebRequest();
+                var operation = webRequest.SendWebRequest();
+                
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -157,7 +168,12 @@ namespace UnityREST
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
 
-                await webRequest.SendWebRequest();
+                var operation = webRequest.SendWebRequest();
+
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
@@ -165,11 +181,11 @@ namespace UnityREST
                 }
 
                 if (webRequest.result == UnityWebRequest.Result.InProgress) continue;
-
+                
                 retryAttempts++;
-
+                
                 await UniTask.WaitForSeconds(APIConfig.RetryDelay);
-
+                
                 if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
                     webRequest.Dispose();
@@ -217,7 +233,12 @@ namespace UnityREST
                     webRequest.SetRequestHeader(header.Key, header.Value);
                 }
 
-                await webRequest.SendWebRequest();
+                var operation = webRequest.SendWebRequest();
+                
+                while (!operation.isDone)
+                {
+                    await Task.Yield();
+                }
 
                 if (webRequest.result == UnityWebRequest.Result.Success)
                 {
