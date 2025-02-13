@@ -62,10 +62,10 @@ namespace UnityREST
         {
             this.result = result;
 
-            if (result.HasError())
-            {
-                return;
-            }
+            // if (result.HasError())
+            // {
+            //     return;
+            // }
 
             try
             {
