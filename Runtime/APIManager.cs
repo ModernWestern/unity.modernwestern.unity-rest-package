@@ -1,7 +1,5 @@
 using System;
-using System.Text;
 using UnityEngine;
-using UnityREST.Util;
 
 namespace UnityREST
 {
@@ -25,13 +23,6 @@ namespace UnityREST
 
         protected static void SetAuth(string token)
         {
-            if (!token.IsBase64Encoded())
-            {
-                var bytesToEncode = Encoding.UTF8.GetBytes(token);
-
-                token = Convert.ToBase64String(bytesToEncode);
-            }
-            
             Transport.SetAuthToken(token);
 
             SaveToken(token);
