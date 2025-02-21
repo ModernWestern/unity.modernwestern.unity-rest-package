@@ -26,7 +26,7 @@ namespace UnityREST
             HeaderValues = new Dictionary<string, string>();
         }
 
-        #region Internal
+#region Internal
 
         protected async UniTaskVoid Internal_GET(string uri, Action<WebResult> resultCallback)
         {
@@ -46,7 +46,7 @@ namespace UnityREST
                 webRequest.timeout = APIConfig.Timeout;
 
                 var operation = webRequest.SendWebRequest();
-                
+
                 while (!operation.isDone)
                 {
                     await Task.Yield();
@@ -104,7 +104,7 @@ namespace UnityREST
                 webRequest.timeout = APIConfig.Timeout;
 
                 var operation = webRequest.SendWebRequest();
-                
+
                 while (!operation.isDone)
                 {
                     await Task.Yield();
@@ -181,11 +181,11 @@ namespace UnityREST
                 }
 
                 if (webRequest.result == UnityWebRequest.Result.InProgress) continue;
-                
+
                 retryAttempts++;
-                
+
                 await UniTask.WaitForSeconds(APIConfig.RetryDelay);
-                
+
                 if (retryAttempts < APIConfig.MaxRetryAttempts)
                 {
                     webRequest.Dispose();
@@ -205,7 +205,8 @@ namespace UnityREST
             webRequest.Dispose();
         }
 
-        protected async UniTaskVoid Internal_PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
+        protected async UniTaskVoid Internal_PUT(string uri, string data, Action<WebResult> resultCallback,
+            bool isPatch)
         {
 #if UNITY_EDITOR
 
@@ -234,7 +235,7 @@ namespace UnityREST
                 }
 
                 var operation = webRequest.SendWebRequest();
-                
+
                 while (!operation.isDone)
                 {
                     await Task.Yield();
@@ -263,119 +264,79 @@ namespace UnityREST
 
 #if UNITY_EDITOR
 
-            Debug.Log($"Response from PUT for uri: {uri}\n{webRequest.downloadHandler.text}");
+            Debug.Log($"Response from {(isPatch ? "PATCH" : "PUT")} for uri: {uri}\n{webRequest.downloadHandler.text}");
 #endif
             resultCallback?.Invoke(webResult);
 
             webRequest.Dispose();
         }
 
-        #endregion
+#endregion
 
-        #region Virtual
+#region Abstracts
 
-        public virtual void GET(string uri, Action<WebResult> resultCallback)
-        {
-        }
+        public abstract void GET(string uri, Action<WebResult> resultCallback);
+        
+        public abstract void GET<T>(string uri, (string key, string value)[] parameters, Action<WebResult<T>> resultCallback);
+        
+        public abstract void GET(string uri, (string key, string value)[] parameters, Action<WebResult> resultCallback);
 
-        public virtual void GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback)
-        {
-        }
+        public abstract void GET(string uri, Dictionary<string, string> parameters, Action<WebResult> resultCallback);
 
-        public virtual void GET<T>(string uri, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void GET<T>(string uri, Action<WebResult<T>> resultCallback);
 
-        public virtual void GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback);
 
-        public virtual void POST(string uri, Action<WebResult> resultCallback)
-        {
-        }
+        public abstract void POST(string uri, Action<WebResult> resultCallback);
 
-        public virtual void POST<T>(string uri, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void POST<T>(string uri, Action<WebResult<T>> resultCallback);
 
-        public virtual void POST(string uri, string body, Action<WebResult> resultCallback)
-        {
-        }
+        public abstract void POST(string uri, string body, Action<WebResult> resultCallback);
 
-        public virtual void POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback);
 
-        public virtual void POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-        }
+        public abstract void POST<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args);
 
-        public virtual void POST<T>(string uri, string body, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void POST<T>(string uri, string body, Action<WebResult<T>> resultCallback);
 
-        public virtual void POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-        }
+        public abstract void POST<T>(string uri, string body, Action<WebResult<T>> resultCallback, params string[] args);
 
-        public virtual void PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
-        {
-        }
+        public abstract void PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch);
 
-        public virtual void PUT(string uri, string data, Action<WebResult> resultCallback)
-        {
-        }
+        public abstract void PUT(string uri, string data, Action<WebResult> resultCallback);
 
-        public virtual void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback);
 
-        public virtual void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-        }
+        public abstract void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args);
 
-        public virtual void PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback);
 
-        public virtual void PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-        }
+        public abstract void PUT<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args);
 
-        public virtual void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback);
 
-        public virtual void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-        }
+        public abstract void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback, params string[] args);
 
-        public virtual void PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback)
-        {
-        }
+        public abstract void PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback);
 
-        public virtual void PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args)
-        {
-        }
+        public abstract void PATCH<T>(string uri, string data, Action<WebResult<T>> resultCallback, params string[] args);
 
-        public virtual void PATCH(string uri, string data, Action<WebResult> resultCallback)
-        {
-        }
+        public abstract void PATCH(string uri, string data, Action<WebResult> resultCallback);
 
-        #endregion
+#endregion
 
-        #region Helpers
+#region Helpers
 
         private static void LogIfError(WebResult result)
         {
             if (result.HasError())
             {
 #if UNITY_EDITOR
-                Debug.LogError($"There was an error requesting: {result}");
+                Debug.Log($"<ccolor=red>Error: </color>{result}");
 #endif
             }
         }
 
-        #endregion
+#endregion
     }
 }

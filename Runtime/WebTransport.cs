@@ -8,7 +8,7 @@ namespace UnityREST
 
     public class WebTransport : WebTransportBase
     {
-        #region Auth
+#region Auth
 
         public WebTransport(APIConfig apiConfig) : base(apiConfig)
         {
@@ -32,7 +32,6 @@ namespace UnityREST
             if (string.IsNullOrEmpty(token))
             {
                 Debug.LogError("Trying to authorize without a token");
-
                 return;
             }
 
@@ -47,11 +46,23 @@ namespace UnityREST
             }
         }
 
-        #endregion
+#endregion
 
-        #region Get
+#region Get
 
-        public override void GET<T>(string uri, Dictionary<string, string> parameters, Action<WebResult<T>> resultCallback)
+        public override void GET<T>(string uri, (string key, string value)[] parameters,
+            Action<WebResult<T>> resultCallback)
+        {
+            GET(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
+        }
+
+        public override void GET(string uri, (string key, string value)[] parameters, Action<WebResult> resultCallback)
+        {
+            GET(URLBuilder.Parameters(uri, parameters), resultCallback);
+        }
+
+        public override void GET<T>(string uri, Dictionary<string, string> parameters,
+            Action<WebResult<T>> resultCallback)
         {
             GET(uri, parameters, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
@@ -71,9 +82,9 @@ namespace UnityREST
             Internal_GET(uri, resultCallback).Forget();
         }
 
-        #endregion
+#endregion
 
-        #region Post
+#region Post
 
         public override void POST<T>(string uri, Action<WebResult<T>> resultCallback)
         {
@@ -110,9 +121,9 @@ namespace UnityREST
             Internal_POST(uri, body, resultCallback).Forget();
         }
 
-        #endregion
+#endregion
 
-        #region Put
+#region Put
 
         public override void PATCH<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
         {
@@ -148,7 +159,7 @@ namespace UnityREST
         {
             PUT(URLBuilder.Args(uri, args), data, result => resultCallback?.Invoke(new WebResult<T>(result)));
         }
-        
+
         public override void PUT<T>(string uri, object obj, Action<WebResult<T>> resultCallback)
         {
             PUT(uri, JBuilder.Object(obj), result => resultCallback?.Invoke(new WebResult<T>(result)));
@@ -163,12 +174,12 @@ namespace UnityREST
         {
             PUT(uri, data, resultCallback, false);
         }
-        
+
         public override void PUT(string uri, string data, Action<WebResult> resultCallback, bool isPatch)
         {
             Internal_PUT(uri, data, resultCallback, isPatch).Forget();
         }
 
-        #endregion
+#endregion
     }
 }

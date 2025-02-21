@@ -1,29 +1,37 @@
 using System;
 using System.Text;
 using UnityEngine;
+using UnityREST.Util;
 
 namespace UnityREST
 {
     public abstract class APIManager : MonoBehaviour
     {
         protected const string AuthTokenCache = "AuthorizationTokenCache";
-        
+
         [Header("Overrides"), Space, SerializeField]
         protected APIConfig apiConfig;
-        
+
         private static event Func<APIConfig> APIConfig;
 
         protected static WebTransport Transport { get; private set; }
-        
+
         protected virtual void Awake()
         {
             Transport = new WebTransport(apiConfig ?? ScriptableObject.CreateInstance<APIConfig>());
-            
+
             APIConfig += () => apiConfig;
         }
-        
+
         protected static void SetAuth(string token)
         {
+            if (!token.IsBase64Encoded())
+            {
+                var bytesToEncode = Encoding.UTF8.GetBytes(token);
+
+                token = Convert.ToBase64String(bytesToEncode);
+            }
+            
             Transport.SetAuthToken(token);
 
             SaveToken(token);
@@ -36,7 +44,7 @@ namespace UnityREST
             DeleteToken();
         }
 
-        protected static string GetCacheToken()
+        protected static string GetCachedToken()
         {
             if (PlayerPrefs.HasKey(AuthTokenCache))
             {
@@ -53,11 +61,7 @@ namespace UnityREST
 
         private static void SaveToken(string token)
         {
-            var bytesToEncode = Encoding.UTF8.GetBytes(token);
-
-            var encodedToken = Convert.ToBase64String(bytesToEncode);
-
-            PlayerPrefs.SetString(AuthTokenCache, encodedToken);
+            PlayerPrefs.SetString(AuthTokenCache, token);
 
             PlayerPrefs.Save();
         }

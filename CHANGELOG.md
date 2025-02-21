@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.1.4] - 2025-02-21
+Support tuples for (key, value) parameters. Minor issues solved.
+
 ## [1.1.3] - 2024-11-24
 An issue when a webrequest got locked was solved.
 

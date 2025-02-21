@@ -10,10 +10,10 @@ namespace UnityREST.Util
         /// </summary>
         /// <example>
         /// <code>
-        /// url: www.site.com/indexwww.site.com/index
+        /// url: https://site.com
         /// key: id, value: 3;
         /// key: style, value: 2;
-        /// result: www.site.com/index?id=3&amp;style=2
+        /// output: https://site.com/index?id=3&amp;style=2
         /// </code>
         /// </example>
         public static string Parameters(string url, Dictionary<string, string> parameters)
@@ -41,15 +41,52 @@ namespace UnityREST.Util
 
             return stringBuilder.ToString();
         }
+        
+        /// <summary>
+        /// Build url with given parameters as GET request.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// url: https://site.com
+        /// key: id, value: 3;
+        /// key: style, value: 2;
+        /// output: https://site.com/index?id=3&amp;style=2
+        /// </code>
+        /// </example>
+        public static string Parameters(string url, (string key, string value)[] parameters)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append(url);
+            stringBuilder.Append("?");
+
+            var count = 0;
+
+            foreach (var values in parameters)
+            {
+                stringBuilder.Append(values.key);
+                stringBuilder.Append("=");
+                stringBuilder.Append(values.value);
+
+                if (count < parameters.Length - 1)
+                {
+                    stringBuilder.Append("&");
+                }
+
+                count++;
+            }
+
+            return stringBuilder.ToString();
+        }
 
         /// <summary>
         /// Build a list of values as a GET array.
         /// </summary>
         /// <example>
         /// <code>
-        /// url: www.site.com/index?id=
+        /// url: https://site.com/index?id=
         /// array: [1,2,3,4,5]
-        /// result: www.site.com/index?id=1,2,3,4,5
+        /// output: https://site.com/index?id=1,2,3,4,5
         /// </code>
         /// </example>
         public static string ParameterArray(params string[] array)
@@ -68,7 +105,19 @@ namespace UnityREST.Util
 
             return parameterValue;
         }
-
+        
+        /// <summary>
+        /// Build a list of values as a GET array.
+        /// <param name="path">The base URL or path.</param>
+        /// <param name="args">An array of query parameters in "key=value" format.</param>
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// url: https://site.com
+        /// array: ["id=123", "name=John"]
+        /// output: https://site.com?id=123&amp;name=John"
+        /// </code>
+        /// </example>
         public static string Args(string path, params string[] args)
         {
             var fullPath = path + (args != null ? $"?{string.Join("&", args)}" : "");

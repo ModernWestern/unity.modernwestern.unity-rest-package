@@ -61,12 +61,7 @@ namespace UnityREST
         public WebResult(WebResult result)
         {
             this.result = result;
-
-            // if (result.HasError())
-            // {
-            //     return;
-            // }
-
+            
             try
             {
                 data = JsonConvert.DeserializeObject<T>(result.ResponseText);
