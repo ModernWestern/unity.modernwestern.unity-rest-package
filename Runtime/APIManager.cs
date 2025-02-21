@@ -46,17 +46,7 @@ namespace UnityREST
 
         protected static string GetCachedToken()
         {
-            if (PlayerPrefs.HasKey(AuthTokenCache))
-            {
-                var tokenBase64 = PlayerPrefs.GetString(AuthTokenCache, null);
-
-                if (tokenBase64 != null)
-                {
-                    return Encoding.UTF8.GetString(Convert.FromBase64String(tokenBase64));
-                }
-            }
-
-            return null;
+            return PlayerPrefs.GetString(AuthTokenCache, null);
         }
 
         private static void SaveToken(string token)
