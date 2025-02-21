@@ -332,7 +332,7 @@ namespace UnityREST
             if (result.HasError())
             {
 #if UNITY_EDITOR
-                Debug.Log($"<ccolor=red>Error: </color>{result}");
+                Debug.Log($"<color=red>Error: </color>{result}");
 #endif
             }
         }
