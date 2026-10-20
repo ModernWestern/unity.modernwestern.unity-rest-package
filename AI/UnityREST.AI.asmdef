@@ -1,0 +1,17 @@
+{
+    "name": "UnityREST.AI",
+    "rootNamespace": "UnityREST.AI",
+    "references": [
+        "UnityREST",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,16 +1,20 @@
 {
   "name": "com.modernwestern.unity-rest",
-  "version": "1.1.4",
+  "version": "2.0.0",
   "displayName": "UnityREST",
-  "description": "REST Helper classes to requesting APIs",
-  "unity": "2019.2",
-  "category": "Tool",
+  "description": "Zero-allocation REST/HTTPS client for Unity with inspector tooling, certificate pinning, Server-Sent Events, and a provider-agnostic AI layer (OpenAI-compatible, Anthropic, Gemini) with tool calling and an MCP client.",
+  "unity": "2022.3",
+  "category": "Networking",
   "keywords": [
-    "Utils",
-    "Methods",
-    "Tools",
     "REST",
-    "API"
+    "HTTP",
+    "HTTPS",
+    "API",
+    "UnityWebRequest",
+    "SSE",
+    "AI",
+    "LLM",
+    "MCP"
   ],
   "author": {
     "name": "Modern Western",
@@ -20,17 +24,23 @@
     "url": "https://github.com/ModernWestern/unity.modernwestern.unity-rest-package.git",
     "type": "git"
   },
-  "scopedRegistries": [
-    {
-      "name": "package.openupm.com",
-      "url": "https://package.openupm.com/",
-      "scopes": [
-        "com.cysharp.unitask"
-      ]
-    }
-  ],
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.1",
-    "com.cysharp.unitask": "2.5.10"
-  }
+    "com.cysharp.unitask": "2.5.10",
+    "com.unity.modules.unitywebrequest": "1.0.0",
+    "com.unity.modules.unitywebrequesttexture": "1.0.0",
+    "com.unity.modules.unitywebrequestaudio": "1.0.0"
+  },
+  "samples": [
+    {
+      "displayName": "REST basics",
+      "description": "Typed requests, auth refresh, downloads and uploads.",
+      "path": "Samples~/Rest"
+    },
+    {
+      "displayName": "AI chat with tools and MCP",
+      "description": "Chat with any provider, local tools and remote MCP tools.",
+      "path": "Samples~/AI"
+    }
+  ]
 }
