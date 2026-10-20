@@ -119,6 +119,10 @@ namespace UnityREST.AI
 
         public static ChatMessage Assistant(string text) => new ChatMessage(ChatRole.Assistant, text);
 
+        /// <summary>Assistant turn that requests tools. For custom <see cref="IChatProvider"/> implementations and tests.</summary>
+        public static ChatMessage Assistant(string text, IReadOnlyList<ToolCall> toolCalls) =>
+            new ChatMessage(ChatRole.Assistant, text) { ToolCalls = toolCalls == null || toolCalls.Count == 0 ? NoToolCalls : toolCalls };
+
         public static ChatMessage ToolResult(ToolCall call, string content, bool isError = false) =>
             new ChatMessage(ChatRole.Tool, content) { ToolCallId = call.Id, ToolName = call.Name, IsError = isError };
 
@@ -154,6 +158,19 @@ namespace UnityREST.AI
 
     public sealed class ChatResponse
     {
+        internal ChatResponse()
+        {
+        }
+
+        /// <summary>Successful response. For custom <see cref="IChatProvider"/> implementations and tests.</summary>
+        public ChatResponse(ChatMessage message, FinishReason finishReason, TokenUsage usage = default, string rawFinishReason = null)
+        {
+            Message = message;
+            FinishReason = finishReason;
+            Usage = usage;
+            RawFinishReason = rawFinishReason;
+        }
+
         public ChatMessage Message { get; internal set; }
 
         public FinishReason FinishReason { get; internal set; }
@@ -173,7 +190,7 @@ namespace UnityREST.AI
 
         public string Text => Message?.Content;
 
-        internal static ChatResponse Failed(HttpError error, long status, string message) => new ChatResponse
+        public static ChatResponse Failed(HttpError error, long status, string message) => new ChatResponse
         {
             Error = error == HttpError.None ? HttpError.Http : error,
             StatusCode = status,

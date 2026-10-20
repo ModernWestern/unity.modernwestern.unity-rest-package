@@ -8,7 +8,7 @@ using UnityREST.AI.Mcp;
 namespace UnityREST.Samples
 {
     /// <summary>
-    /// An NPC that answers with any provider, streams its reply, uses a local tool that reads the scene
+    /// An assistant that answers with any provider, streams its reply, uses a local tool that reads the scene
     /// and, optionally, every tool of a remote MCP server.
     /// </summary>
     public sealed class AiChatExample : MonoBehaviour
@@ -25,7 +25,7 @@ namespace UnityREST.Samples
         private async UniTaskVoid Start()
         {
             var token = this.GetCancellationTokenOnDestroy();
-            var chat = new ChatSession(provider.CreateProvider(), "You are a concise NPC living in this Unity scene.");
+            var chat = new ChatSession(provider.CreateProvider(), "You are a concise assistant that knows this Unity scene.");
 
             // Local tool: the model decides when to call it.
             chat.Tools.Add(Tool.Create("scene_objects", "Lists root objects of the active scene.",

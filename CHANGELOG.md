@@ -14,7 +14,8 @@ Reescritura completa. Rompe compatibilidad con 1.x (ver "Migración" en el READM
 - Inspector nuevo: barra de entornos, validaciones, endpoints en una línea con el verbo en color y probador de peticiones; drawers `[Secret]`, `HttpHeader`, `Endpoint` y `EndpointRef`.
 - Módulo opcional `UnityREST.AI`: proveedores compatibles con OpenAI, Anthropic y Gemini, streaming, imágenes, herramientas (`Tool`, `ToolSchema`), `ChatSession` con bucle de herramientas y cliente MCP (Streamable HTTP).
 - Ventana **Window → UnityREST → AI Playground** y asset `ChatProviderAsset` con presets.
-- 37 pruebas EditMode, incluidas pruebas de asignación y de integración con servidor local.
+- `ChatSession.SystemPrompt` editable, `TrimHistory` (sin separar herramientas de sus resultados) y evento `RoundCompleted`; constructores públicos de `ChatResponse` y `ChatMessage.Assistant(text, toolCalls)` para proveedores propios.
+- 40 pruebas EditMode, incluidas pruebas de asignación y de integración con servidor local.
 
 ### Cambiado
 - Mínimo Unity 2022.3. Se quitan `scopedRegistries` de `package.json` (Unity solo los lee del manifiesto del proyecto).

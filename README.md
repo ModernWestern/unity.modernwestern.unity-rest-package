@@ -123,7 +123,7 @@ El módulo `UnityREST.AI` es opcional y usa el mismo transporte.
 
 ```csharp
 var provider = ChatProviderSettings.Anthropic().CreateProvider();   // o OpenAI(), Gemini(), Ollama(), LmStudio(), OpenRouter(), OpenAICompatible(url, modelo)
-var chat = new ChatSession(provider, "Eres un NPC conciso.");
+var chat = new ChatSession(provider, "Eres un asistente conciso.");
 
 chat.Tools.Add(Tool.Create("get_time", "Hora del juego",
     new ToolSchema().String("zone", "Zona horaria", required: false),
@@ -135,6 +135,7 @@ var reply = await chat.SendAsync("¿Qué hora es?", delta => label.text += delta
 - **Proveedores**: formato OpenAI Chat Completions (OpenAI, Azure OpenAI, Ollama, LM Studio, OpenRouter, Groq, Mistral, DeepSeek, vLLM...), Anthropic Messages y Google Gemini.
 - **Bucle de herramientas**: `ChatSession` ejecuta las herramientas que pide el modelo (en paralelo), devuelve los resultados y repite hasta tener respuesta o llegar a `MaxToolRounds`. `ApproveToolCall` permite pedir confirmación antes de cada una. Si un turno falla o se cancela, se retira del historial para poder reintentarlo.
 - **Razonamiento conservado**: las respuestas de Anthropic (bloques `thinking` con firma) y de Gemini (`thoughtSignature`) se reenvían tal cual al mismo proveedor, como exige el uso de herramientas en varios turnos.
+- **Sesión editable**: `chat.SystemPrompt` se puede cambiar a mitad de la conversación, `chat.TrimHistory(n)` recorta los turnos viejos sin separar una herramienta de su resultado (y devuelve lo recortado para resumirlo) y `RoundCompleted` avisa de cada respuesta del modelo, incluidas las que solo piden herramientas.
 - **Imágenes**: `ChatMessage.User("¿Qué ves?", ChatImage.FromTexture(captura))`.
 - **Configuración en asset**: **Assets → Create → UnityREST → AI Chat Provider**, con presets. La clave puede venir de una variable de entorno (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`...) para no guardarla en el asset.
 - **Modelos por defecto**: `claude-opus-5-5`, `gpt-5-mini`, `gemini-2.5-flash`; cámbialos en `model`. Los modelos actuales de Claude rechazan `temperature`, así que solo se envía si activas `overrideTemperature`. `effort` se envía como `output_config.effort` (Anthropic) o `reasoning_effort` (OpenAI).
@@ -149,6 +150,10 @@ chat.Tools.AddRange(await mcp.GetToolsAsync("remoto_"));   // las herramientas M
 var texto = await mcp.ReadResourceAsync("file:///readme.md");
 var cualquiera = await mcp.RequestAsync("prompts/list");
 ```
+
+### Personajes y NPC
+
+Este paquete se limita a hablar con las APIs. La capa de personajes (personalidad, contexto del juego, acciones, emoción, memoria y afinidad) vive en un paquete aparte que depende de este: `com.modernwestern.ai-npc`.
 
 ## Migración desde 1.x
 
@@ -174,7 +179,7 @@ Fallos de la 1.x que desaparecen:
 
 ## Pruebas
 
-`Tests/Editor` incluye 37 pruebas (EditMode): URLs, SSE, serialización, asignaciones, pinning contra hashes de openssl e integración con un servidor HTTP local (reintentos, timeout, cancelación, 401 con refresh, formularios, multipart, SSE, los tres proveedores de IA con herramientas y un servidor MCP).
+`Tests/Editor` incluye 40 pruebas (EditMode): URLs, SSE, serialización, asignaciones, pinning contra hashes de openssl e integración con un servidor HTTP local (reintentos, timeout, cancelación, 401 con refresh, formularios, multipart, SSE, los tres proveedores de IA con herramientas, la sesión de chat y un servidor MCP).
 
 Para correrlas, agrega el paquete a `testables` en el `manifest.json`:
 
