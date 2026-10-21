@@ -20,6 +20,7 @@
     "name": "Modern Western",
     "url": "https://github.com/ModernWestern/"
   },
+  "documentationUrl": "https://github.com/ModernWestern/unity.modernwestern.unity-rest-package/blob/main/Documentation~/README.md",
   "repository": {
     "url": "https://github.com/ModernWestern/unity.modernwestern.unity-rest-package.git",
     "type": "git"

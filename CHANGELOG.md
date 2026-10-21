@@ -15,6 +15,7 @@ Reescritura completa. Rompe compatibilidad con 1.x (ver "Migración" en el READM
 - Módulo opcional `UnityREST.AI`: proveedores compatibles con OpenAI, Anthropic y Gemini, streaming, imágenes, herramientas (`Tool`, `ToolSchema`), `ChatSession` con bucle de herramientas y cliente MCP (Streamable HTTP).
 - Ventana **Window → UnityREST → AI Playground** y asset `ChatProviderAsset` con presets.
 - `ChatSession.SystemPrompt` editable, `TrimHistory` (sin separar herramientas de sus resultados) y evento `RoundCompleted`; constructores públicos de `ChatResponse` y `ChatMessage.Assistant(text, toolCalls)` para proveedores propios.
+- Documentación completa en `Documentation~/` (16 guías en español).
 - 40 pruebas EditMode, incluidas pruebas de asignación y de integración con servidor local.
 
 ### Cambiado

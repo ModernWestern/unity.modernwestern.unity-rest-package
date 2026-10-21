@@ -4,6 +4,7 @@ Cliente REST/HTTPS para Unity pensado para no generar basura, con herramientas d
 
 - **Unity:** 2022.3 LTS o superior (probado en 2022.3.62f1 y 6000.1.5f1).
 - **Dependencias:** `com.cysharp.unitask` 2.5.10 y `com.unity.nuget.newtonsoft-json` 3.2.1 (las mismas que la versión 1.x).
+- **Documentación completa:** [Documentation~/README.md](Documentation~/README.md), con 16 guías que van desde la instalación hasta la referencia de la API.
 
 ## Instalación
 
